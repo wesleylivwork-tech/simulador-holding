@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Imóveis para a Holding · Simulador</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0b0e14;color:#e6e9f0;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:28px 32px 60px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;gap:20px;flex-wrap:wrap}
+h1{font-size:25px;font-weight:650;letter-spacing:-.02em}
+header .s{color:#7d8699;font-size:14px;margin-top:3px}
+.ghost{background:none;border:1px solid #2a3450;color:#8b93a7;border-radius:9px;padding:9px 16px;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap}
+.ghost:hover{border-color:#e8b34b;color:#e8b34b}
+.grid{display:grid;grid-template-columns:310px 1fr;gap:20px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:#131824;border:1px solid #1e2536;border-radius:16px;padding:20px;position:sticky;top:20px}
+.panel h2{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5c6478;margin-bottom:14px}
+label{display:block;font-size:12px;color:#8b93a7;margin-bottom:5px}
+.f{margin-bottom:14px}
+input{width:100%;background:#0b0e14;border:1px solid #263049;color:#e6e9f0;border-radius:9px;padding:11px 12px;font-size:15px;font-family:inherit;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
+.f.main input{font-size:23px;font-weight:650;color:#e8b34b;padding:13px 12px;text-align:center}
+.hint{font-size:11px;color:#5c6478;margin-top:4px;line-height:1.45}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.steps{display:flex;gap:5px;margin-bottom:14px}
+.steps button{flex:1;background:#0b0e14;border:1px solid #263049;color:#8b93a7;border-radius:7px;padding:7px 2px;font-size:11.5px;font-family:inherit;cursor:pointer;font-variant-numeric:tabular-nums}
+.steps button:hover{border-color:#e8b34b;color:#e8b34b;background:#0f1420}
+.steps button:active{background:#e8b34b;color:#0b0e14}
+.idx{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
+.idx button{background:#0b0e14;border:1px solid #263049;color:#8b93a7;border-radius:8px;padding:7px 5px;font-size:11.5px;font-family:inherit;cursor:pointer;line-height:1.3}
+.idx button:hover{border-color:#e8b34b;color:#e8b34b}
+.idx button.on{background:#e8b34b;border-color:#e8b34b;color:#0b0e14;font-weight:650}
+.sw{display:flex;align-items:center;gap:10px;background:#0b0e14;border:1px solid #263049;border-radius:9px;padding:10px 12px;cursor:pointer;margin-bottom:4px}
+.sw:hover{border-color:#3a4666}
+.sw .box{width:17px;height:17px;border-radius:5px;border:1.5px solid #3a4666;flex:0 0 17px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0b0e14}
+.sw.on .box{background:#3ddc84;border-color:#3ddc84}
+.sw .tt{font-size:12.5px;color:#a2aabb;line-height:1.35}
+.sw.on .tt{color:#e6e9f0}
+.adv{border-top:1px solid #1e2536;margin-top:16px;padding-top:14px}
+.advb{width:100%;background:none;border:none;color:#5c6478;font-size:12px;font-family:inherit;cursor:pointer;text-align:left;padding:0;letter-spacing:.05em}
+.advb:hover{color:#e8b34b}
+#advBox{display:none;margin-top:14px}
+#advBox.on{display:block}
+.hero{background:linear-gradient(140deg,#1c2334,#131824);border:1px solid #2f3a56;border-radius:16px;padding:26px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.hero .big{font-size:46px;font-weight:700;color:#3ddc84;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
+.hero .big.neg{color:#e05d5d}
+.hero .lb{font-size:13.5px;color:#96a0b5;margin-top:8px}
+.hero .rgt{display:flex;gap:32px;text-align:right}
+.hero .rgt .v{font-size:22px;font-weight:650;color:#e8b34b;font-variant-numeric:tabular-nums;line-height:1.1}
+.hero .rgt .l{font-size:11.5px;color:#7d8699;margin-top:4px}
+.jr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:900px){.jr{grid-template-columns:1fr}}
+.mo{background:#131824;border:1px solid #1e2536;border-radius:16px;padding:20px;display:flex;flex-direction:column}
+.mo .tp{display:flex;align-items:center;gap:9px;margin-bottom:16px}
+.mo .tp .hd{flex:1}
+.mo .dot{width:24px;height:24px;border-radius:50%;background:#e8b34b;color:#0b0e14;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 24px}
+.mo .tt{font-size:13.5px;font-weight:650}
+.mo .st{font-size:11.5px;color:#6f7789;margin-top:1px}
+.plus{background:#0b0e14;border:1px solid #263049;color:#7d8699;border-radius:7px;padding:4px 9px;font-size:11.5px;font-family:inherit;cursor:pointer;white-space:nowrap;flex:0 0 auto}
+.plus:hover{border-color:#e8b34b;color:#e8b34b}
+.plus.on{background:#e8b34b;border-color:#e8b34b;color:#0b0e14;font-weight:600}
+.det{display:none;background:#0d1119;border:1px solid #1e2536;border-radius:10px;padding:13px 14px;margin-bottom:14px}
+.det.on{display:block}
+.det .dr{display:flex;justify-content:space-between;padding:5px 0;font-size:12.5px;gap:10px;border-bottom:1px solid #161c29}
+.det .dr:last-of-type{border-bottom:none}
+.det .dr .a{color:#8b93a7}
+.det .dr .b{font-variant-numeric:tabular-nums;font-weight:600;color:#c9d0de;white-space:nowrap}
+.det .dr.acc .b{color:#e8b34b}
+.det .dr.sub{padding:0 0 6px;border-bottom:none;margin-top:-3px}
+.det .dr.sub .a{font-size:11px;color:#5c6478}
+.det .tx{font-size:12.5px;color:#7d8699;line-height:1.6;margin-top:10px;padding-top:10px;border-top:1px solid #1b2130}
+.li{padding:12px 0;border-bottom:1px solid #1b2130}
+.li:last-child{border-bottom:none;padding-bottom:0}
+.li .lk{font-size:12.5px;color:#8b93a7;margin-bottom:3px}
+.li .lv{font-size:22px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.15}
+.li .ls{font-size:11.5px;color:#6f7789;margin-top:2px}
+.li.tot{background:#171d2b;margin:12px -20px -20px;padding:15px 20px;border-radius:0 0 15px 15px;border-bottom:none}
+.g{color:#3ddc84}.rd{color:#e05d5d}.bl{color:#5b8def}.gd{color:#e8b34b}
+.tl{background:#131824;border:1px solid #1e2536;border-radius:16px;padding:20px;margin-bottom:16px}
+.tl .th{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.tl .th .tt{font-size:13.5px;font-weight:650}
+.tl .th .st{font-size:11.5px;color:#6f7789;margin-top:1px}
+.mesin{display:flex;align-items:center;gap:9px}
+.mesin span{font-size:12.5px;color:#8b93a7;white-space:nowrap}
+.mesin input{width:82px;text-align:center;padding:8px;font-size:15px;font-weight:650;color:#e8b34b}
+.tlg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:820px){.tlg{grid-template-columns:1fr 1fr}}
+.tc{background:#0d1119;border:1px solid #1e2536;border-radius:11px;padding:14px 15px}
+.tc .k{font-size:11.5px;color:#8b93a7;margin-bottom:5px;line-height:1.35}
+.tc .v{font-size:21px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.15}
+.tc .s{font-size:11px;color:#5c6478;margin-top:3px}
+.bar{height:5px;background:#0d1119;border-radius:3px;margin-top:16px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.barl{display:flex;justify-content:space-between;font-size:11px;color:#5c6478;margin-top:6px}
+.rend{background:#0f1420;border:1px solid #223050;border-radius:12px;padding:16px 18px;margin-top:16px}
+.rend .rh{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#3ddc84;margin-bottom:13px}
+.rg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:820px){.rg{grid-template-columns:1fr 1fr}}
+.rv{font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.025em;line-height:1.1}
+.rl{font-size:11px;color:#7d8699;margin-top:4px;line-height:1.35}
+.rn{font-size:12.5px;color:#8b93a7;line-height:1.6;margin-top:14px;padding-top:12px;border-top:1px solid #1b2130}
+.rn b{color:#e6e9f0}
+.rot{background:#0f1420;border:1px solid #1e2536;border-left:3px solid #e8b34b;border-radius:0 14px 14px 0;padding:20px 24px;font-size:16px;line-height:1.75;color:#c9d0de}
+.rot b{color:#fff;font-weight:650}
+.rot .h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e8b34b;margin-bottom:10px;display:block}
+.lg{background:#131824;border:1px solid #1e2536;border-radius:16px;padding:20px;margin-top:16px}
+.lgh{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.lgh .tt{font-size:13.5px;font-weight:650}
+.lgh .st{font-size:11.5px;color:#6f7789;margin-top:1px}
+.lw{display:flex;flex-direction:column;gap:8px}
+.lc{background:#0d1119;border:1px solid #1e2536;border-radius:11px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.lc:hover{border-color:#2f3a56}
+.lc.on{border-color:#2f3a56;background:#0f1420}
+.lt{display:flex;align-items:center;gap:10px;padding:13px 15px}
+.lt .q{flex:1;font-size:13.5px;color:#d3d9e6;line-height:1.4}
+.lc.on .lt .q{color:#fff;font-weight:600}
+.lt .ar{color:#5c6478;font-size:11px;transition:transform .15s;flex:0 0 auto}
+.lc.on .lt .ar{transform:rotate(180deg);color:#e8b34b}
+.tag{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:5px;white-space:nowrap;flex:0 0 auto}
+.tag.ok{background:#12301f;color:#3ddc84}
+.tag.warn{background:#33210f;color:#e8b34b}
+.tag.new{background:#0f2440;color:#5b8def}
+.tag.off{background:#251820;color:#a07480}
+.lb{display:none;padding:0 15px 15px;font-size:13.5px;color:#b3bbcc;line-height:1.68}
+.lc.on .lb{display:block}
+.lb p{margin-bottom:9px}
+.lb p:last-child{margin-bottom:0}
+.lb b{color:#e6e9f0}
+.lb .ref{background:#0b0e14;border-left:2px solid #2f3a56;border-radius:0 7px 7px 0;padding:10px 13px;font-size:12.5px;color:#7d8699;margin-top:11px;line-height:1.6}
+.lb .ref b{color:#9aa3b6}
+.lgf{font-size:11.5px;color:#5c6478;line-height:1.6;margin-top:14px;padding-top:13px;border-top:1px solid #1e2536}
+#ana{display:none;margin-top:20px}
+#ana.on{display:block}
+.acols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.acols{grid-template-columns:1fr}}
+.ac{background:#131824;border:1px solid #1e2536;border-radius:14px;padding:18px}
+.ac h3{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#e8b34b;margin-bottom:12px}
+.r{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #1b2130;gap:12px}
+.r:last-child{border-bottom:none}
+.r .k{color:#9aa3b6;font-size:13px}
+.r .v{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;white-space:nowrap}
+.r.hi .k{color:#e6e9f0;font-weight:600}.r.hi .v{color:#e8b34b;font-size:15px}
+.note{font-size:12.5px;color:#6f7789;line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid #1b2130}
+.wr{background:#1a1419;border:1px solid #33202a;border-radius:12px;padding:14px 16px;margin-top:12px}
+.wr .t{color:#e05d5d;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.wr p{font-size:13px;color:#aab2c4;line-height:1.6}
+.foot{text-align:center;color:#4e566a;font-size:11.5px;margin-top:34px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Imóveis para a Holding</h1>
+    <div class="s">A holding compra os imóveis com carta de consórcio contemplada. O capital que entra é investido.</div>
+  </div>
+  <button class="ghost" id="btnA" onclick="tog()">Ver análise técnica</button>
+</header>
+
+<div class="grid">
+  <div class="panel">
+    <h2>Simulação</h2>
+    <div class="f main">
+      <label>Valor dos imóveis hoje</label>
+      <input type="text" inputmode="numeric" id="vImov" value="17.000.000">
+    </div>
+    <div class="steps">
+      <button onclick="ad(-1e6)">−1M</button><button onclick="ad(-5e5)">−500k</button>
+      <button onclick="ad(5e5)">+500k</button><button onclick="ad(1e6)">+1M</button>
+      <button onclick="ad(5e6)">+5M</button>
+    </div>
+    <div class="f">
+      <label>Quanto ele pagou nos imóveis</label>
+      <input type="text" inputmode="numeric" id="vCusto" value="8.500.000">
+      <div class="steps" style="margin-top:7px">
+        <button onclick="ac(-5e5)">−500k</button><button onclick="ac(5e5)">+500k</button>
+        <button onclick="ac(1e6)">+1M</button><button onclick="pctv(.3)">30%</button>
+        <button onclick="pctv(.5)">50%</button>
+      </div>
+      <div class="hint">Valor de aquisição, o que está na declaração de imposto de renda. Serve só para calcular o ganho de capital. <span id="hPct"></span></div>
+    </div>
+    <div class="f">
+      <label>Ano em que comprou os imóveis</label>
+      <input type="number" id="vAno" value="2011" step="1">
+      <div class="hint" id="hRed"></div>
+    </div>
+    <div class="two">
+      <div class="f"><label>Rende (% ao mês)</label><input type="number" id="vTx" value="1" step="0.05"></div>
+      <div class="f"><label>Contempla no mês</label><input type="number" id="vMc" value="24" step="1"></div>
+    </div>
+    <div class="f"><label>Redutor da parcela (%)</label><input type="number" id="vRed" value="50" step="5"></div>
+
+    <div class="f">
+      <label>Reajuste anual da parcela (INCC)</label>
+      <div class="idx">
+        <button id="i1" class="on" onclick="si(6.59,'i1')">Média 10 anos<br>6,59%</button>
+        <button id="i2" onclick="si(7.78,'i2')">Média 5 anos<br>7,78%</button>
+        <button id="i3" onclick="si(6.40,'i3')">Últimos 12m<br>6,40%</button>
+        <button id="i4" onclick="si(0,'i4')">Sem reajuste<br>0%</button>
+      </div>
+      <input type="number" id="vIdx" value="6.59" step="0.1">
+      <div class="hint">Consórcio de imóvel na Porto é corrigido pelo INCC, não por IGP-M nem IPCA. Primeiro reajuste no 14º mês, depois a cada 12 meses.</div>
+    </div>
+
+    <div class="sw on" id="swAc" onclick="sa()">
+      <div class="box">✓</div>
+      <div class="tt">O rendimento acompanha o índice</div>
+    </div>
+    <div class="hint" style="margin-bottom:4px">Ligado simula capital em IPCA+ ou similar. Desligado simula pós-fixado com taxa nominal travada, o cenário mais duro.</div>
+
+    <div class="adv">
+      <button class="advb" onclick="ta()" id="advT">▸ Ajustes avançados</button>
+      <div id="advBox">
+        <div class="three" style="margin-top:12px">
+          <div class="f"><label>Taxa adm %</label><input type="number" id="vAdm" value="19.5" step="0.5"></div>
+          <div class="f"><label>F. reserva %</label><input type="number" id="vFr" value="2" step="0.5"></div>
+          <div class="f"><label>Prazo (m)</label><input type="number" id="vPz" value="200" step="10"></div>
+        </div>
+        <div class="two">
+          <div class="f"><label>Embutido %</label><input type="number" id="vEmb" value="30" step="1"></div>
+          <div class="f"><label>Lance fixo %</label><input type="number" id="vLan" value="40" step="1"></div>
+        </div>
+        <div class="f">
+          <label>Esses dois percentuais incidem sobre</label>
+          <div class="idx" style="grid-template-columns:1fr 1fr">
+            <button id="bCre" class="on" onclick="setBase('cre')">O crédito</button>
+            <button id="bCat" onclick="setBase('cat')">A categoria</button>
+          </div>
+          <div class="hint" id="hBase"></div>
+        </div>
+        <div class="three">
+          <div class="f"><label>ITBI %</label><input type="number" id="vItbi" value="2" step="0.1"></div>
+          <div class="f"><label>Cartório %</label><input type="number" id="vCart" value="1" step="0.1"></div>
+          <div class="f"><label>IR rend. %</label><input type="number" id="vIrr" value="15" step="0.5"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="hero">
+      <div>
+        <div class="big" id="hS">R$ 0</div>
+        <div class="lb">sobra no primeiro mês depois de contemplar, já pagando a parcela</div>
+      </div>
+      <div class="rgt">
+        <div><div class="v" id="hPm">R$ 0</div><div class="l">por milhão</div></div>
+        <div><div class="v" id="hC">0,00x</div><div class="l">cobertura</div></div>
+      </div>
+    </div>
+
+    <div class="jr">
+      <div class="mo">
+        <div class="tp"><div class="dot">1</div><div class="hd"><div class="tt">Você entra</div><div class="st" id="s1"></div></div>
+          <button class="plus" id="pl1" onclick="det(1)">+ info</button></div>
+        <div class="det" id="dt1">
+          <div class="dr"><span class="a">Carta contratada</span><span class="b" id="x11">R$ 0</span></div>
+          <div class="dr"><span class="a">Categoria, com as taxas</span><span class="b" id="x12">R$ 0</span></div>
+          <div class="dr"><span class="a">Lance exigido</span><span class="b" id="x13">R$ 0</span></div>
+          <div class="dr sub"><span class="a" id="x13b"></span></div>
+          <div class="dr"><span class="a">Pago com embutido</span><span class="b" id="x14">R$ 0</span></div>
+          <div class="dr sub"><span class="a" id="x14b"></span></div>
+          <div class="dr acc"><span class="a">Falta do bolso</span><span class="b" id="x15">R$ 0</span></div>
+          <div class="dr"><span class="a">Parcela sem redutor</span><span class="b" id="x16">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Parcela com redutor</span><span class="b" id="x17">R$ 0</span></div>
+          <div class="tx" id="x18"></div>
+        </div>
+        <div class="li"><div class="lk">Lance, do seu bolso</div><div class="lv gd" id="a1">R$ 0</div></div>
+        <div class="li"><div class="lk">Parcela mensal</div><div class="lv" id="a2">R$ 0</div><div class="ls" id="a2b"></div></div>
+        <div class="li tot"><div class="lk">Total até a carta cair</div><div class="lv" id="a3">R$ 0</div></div>
+      </div>
+
+      <div class="mo">
+        <div class="tp"><div class="dot">2</div><div class="hd"><div class="tt">O imóvel entra na holding</div><div class="st">e o dinheiro sai pra você</div></div>
+          <button class="plus" id="pl2" onclick="det(2)">+ info</button></div>
+        <div class="det" id="dt2">
+          <div class="dr"><span class="a">Valor de venda</span><span class="b" id="x21">R$ 0</span></div>
+          <div class="dr"><span class="a">Quanto você pagou</span><span class="b" id="x22">R$ 0</span></div>
+          <div class="dr"><span class="a">Ganho de capital</span><span class="b" id="x23">R$ 0</span></div>
+          <div class="dr"><span class="a">Redutor por tempo de posse</span><span class="b" id="x23b">R$ 0</span></div>
+          <div class="dr"><span class="a">Base que é tributada</span><span class="b" id="x23c">R$ 0</span></div>
+          <div class="dr"><span class="a">Imposto de renda</span><span class="b" id="x24">R$ 0</span></div>
+          <div class="dr"><span class="a">ITBI</span><span class="b" id="x25">R$ 0</span></div>
+          <div class="dr"><span class="a">Cartório e registro</span><span class="b" id="x26">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Limpo na sua mão</span><span class="b" id="x27">R$ 0</span></div>
+          <div class="tx" id="x28"></div>
+        </div>
+        <div class="li"><div class="lk">A holding te paga</div><div class="lv" id="b1">R$ 0</div></div>
+        <div class="li"><div class="lk">Imposto, ITBI e cartório</div><div class="lv rd" id="b2">R$ 0</div></div>
+        <div class="li tot"><div class="lk">Limpo na sua mão</div><div class="lv bl" id="b3">R$ 0</div></div>
+      </div>
+
+      <div class="mo">
+        <div class="tp"><div class="dot">3</div><div class="hd"><div class="tt">O dinheiro trabalha</div><div class="st" id="s3"></div></div>
+          <button class="plus" id="pl3" onclick="det(3)">+ info</button></div>
+        <div class="det" id="dt3">
+          <div class="dr"><span class="a">Capital investido</span><span class="b" id="x31">R$ 0</span></div>
+          <div class="dr"><span class="a">Rende bruto por mês</span><span class="b" id="x32">R$ 0</span></div>
+          <div class="dr"><span class="a">Imposto do rendimento</span><span class="b" id="x33">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Rende líquido</span><span class="b" id="x34">R$ 0</span></div>
+          <div class="dr"><span class="a">Parcela do consórcio</span><span class="b" id="x35">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Sobra</span><span class="b" id="x36">R$ 0</span></div>
+          <div class="dr"><span class="a">Taxa mínima pra empatar</span><span class="b" id="x37">0%</span></div>
+          <div class="tx" id="x38"></div>
+        </div>
+        <div class="li"><div class="lk">Rende por mês</div><div class="lv g" id="c1">R$ 0</div></div>
+        <div class="li"><div class="lk">Parcela do consórcio</div><div class="lv" id="c2">R$ 0</div><div class="ls" id="c2b"></div></div>
+        <div class="li tot"><div class="lk">Sobra no seu bolso</div><div class="lv g" id="c3">R$ 0</div></div>
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="th">
+        <div><div class="tt">Ao longo do consórcio</div><div class="st" id="s4">a parcela sobe todo ano, o dinheiro continua rendendo</div></div>
+        <div class="mesin"><span>ver no mês</span><input type="number" id="vMes" value="100" step="1"><span id="anoLb"></span></div>
+      </div>
+      <div class="tlg">
+        <div class="tc"><div class="k">Parcela nesse mês</div><div class="v gd" id="w1">R$ 0</div><div class="s" id="w1b"></div></div>
+        <div class="tc"><div class="k">Capital investido nesse mês</div><div class="v bl" id="w2">R$ 0</div><div class="s" id="w2b"></div></div>
+        <div class="tc"><div class="k">Total pago no consórcio</div><div class="v" id="w3">R$ 0</div><div class="s">com todos os reajustes</div></div>
+        <div class="tc"><div class="k">Capital no fim do consórcio</div><div class="v g" id="w4">R$ 0</div><div class="s" id="w4b"></div></div>
+      </div>
+      <div class="rend">
+        <div class="rh">O que o capital rendeu</div>
+        <div class="rg">
+          <div><div class="rv g" id="r1">R$ 0</div><div class="rl">ganho no período, acima do que entrou</div></div>
+          <div><div class="rv gd" id="r2">0%</div><div class="rl">rentabilidade total no período</div></div>
+          <div><div class="rv gd" id="r3">0%</div><div class="rl">equivalente ao ano</div></div>
+          <div><div class="rv" id="r4">0x</div><div class="rl">multiplicou o capital</div></div>
+        </div>
+        <div class="rn" id="r5"></div>
+      </div>
+      <div class="bar"><i id="bar1"></i><i id="bar2"></i></div>
+      <div class="barl"><span id="bl1"></span><span id="bl2"></span></div>
+    </div>
+
+    <div class="rot">
+      <span class="h">Como contar</span>
+      <div id="rot"></div>
+    </div>
+
+    <div class="lg">
+      <div class="lgh">
+        <div><div class="tt">O que a lei permite</div><div class="st">em português, com a regra ao lado para o contador conferir</div></div>
+        <button class="ghost" onclick="lall()" id="lallb">Abrir todos</button>
+      </div>
+
+      <div class="lw">
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag ok">vale a pena</span><span class="q">Colocar o imóvel na holding pelo valor que pagou, sem imposto nenhum</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> quando você entrega um imóvel para a sua própria empresa como capital, pode declarar ele pelo mesmo valor que está na sua declaração de imposto de renda, e não pelo valor que ele vale hoje. Como não houve lucro na conta, não há imposto de ganho de capital. É a rota mais barata que existe.</p>
+            <p><b>O custo:</b> a empresa fica com o imóvel registrado por um valor baixo. No dia em que ela vender, o lucro vai ser grande e o imposto vem lá na frente. Você adiou, não eliminou.</p>
+            <p class="ref"><b>A regra:</b> Lei 9.249/1995, art. 23. A pessoa física pode transferir bens à pessoa jurídica pelo valor constante da declaração de bens ou pelo valor de mercado, à sua escolha. Optando pelo valor da declaração, não há ganho de capital a apurar.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag warn">cuidado</span><span class="q">O ITBI é isento na integralização, mas só até o valor do capital social</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> a Constituição isenta de ITBI o imóvel que entra numa empresa como capital. Só que o Supremo decidiu que essa isenção vale até o valor que você declarou como capital. Se o imóvel vale 1 milhão e você integraliza por 500 mil, muitos municípios cobram ITBI sobre os 500 mil de diferença.</p>
+            <p><b>O que fazer:</b> integralizar pelo valor de mercado elimina esse risco de ITBI, mas aí você paga imposto de ganho de capital. É escolher qual dos dois pagar. Vale checar como a prefeitura da cidade dos imóveis vem aplicando isso na prática, porque varia bastante.</p>
+            <p><b>Atenção:</b> se a operação for compra e venda, como nesta simulação, não existe isenção nenhuma. O ITBI é devido cheio.</p>
+            <p class="ref"><b>A regra:</b> CF art. 156, §2º, I. STF, Tema 796 de repercussão geral, tese reafirmada em decisão de 30/03/2026: "a imunidade em relação ao ITBI não alcança o valor dos bens que exceder o limite do capital social a ser integralizado".</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag ok">economia grande</span><span class="q">Imóvel antigo paga muito menos imposto na venda</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> a lei entende que parte do lucro na venda de um imóvel é só inflação, não ganho de verdade. Então ela deixa você abater uma fatia do lucro antes de calcular o imposto, e essa fatia cresce a cada mês que você segurou o imóvel. Quanto mais antigo, menos imposto.</p>
+            <p><b>Quanto dá:</b> são dois redutores que se somam. Um corta cerca de 0,35% do lucro tributável por mês desde dezembro de 2005. Outro, mais forte, corta 0,60% por mês para o período anterior a novembro de 2005. E imóvel comprado até 1988 ainda tem uma terceira redução, de 5% a 100% conforme o ano.</p>
+            <p><b>Nesta simulação:</b> <span id="lgRed"></span></p>
+            <p class="ref"><b>A regra:</b> Lei 11.196/2005, art. 40 (fatores FR1 e FR2) e Lei 7.713/1988, art. 18 (percentual fixo por ano de aquisição, de 1969 a 1988). Aplicam-se apenas à pessoa física, e são cumulativos entre si.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag ok">vale a pena</span><span class="q">Imposto do lucro é por faixa, então dividir a operação em anos ajuda</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> o imposto sobre o lucro da venda não é 15% em tudo. Ele sobe por degrau conforme o lucro aumenta. Os primeiros 5 milhões pagam 15%, a faixa seguinte 17,5%, depois 20% e por último 22,5%. E a contagem recomeça a cada ano.</p>
+            <p><b>A oportunidade:</b> vender os imóveis em anos diferentes mantém mais lucro na faixa barata. Num patrimônio grande isso sozinho pode valer centenas de milhares. É o mesmo escalonamento que resolve o problema de caixa da operação, então os dois motivos apontam para o mesmo caminho.</p>
+            <p class="ref"><b>A regra:</b> Lei 8.981/1995, art. 21, com redação da Lei 13.259/2016. Faixas: até R$ 5 milhões 15%, de 5 a 10 milhões 17,5%, de 10 a 30 milhões 20%, acima de 30 milhões 22,5%.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag warn">cuidado</span><span class="q">Se a holding viver de imóvel, ela perde a isenção do ITBI</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> a isenção de ITBI na integralização não vale para empresa cuja atividade principal é comprar, vender ou alugar imóvel. E é exatamente isso que uma holding patrimonial costuma fazer. O município olha o faturamento dos dois anos anteriores e dos dois seguintes: se mais da metade veio de imóvel, cobra o ITBI.</p>
+            <p><b>Detalhe importante:</b> empresa nova, sem faturamento anterior, é avaliada pelos três anos seguintes à aquisição. Ou seja, o risco não fecha no dia da abertura, ele fica aberto por alguns anos.</p>
+            <p><b>Nesta operação isso não pesa</b>, porque a compra e venda já paga ITBI de qualquer forma. Vira problema só se você mudar para a rota de integralização.</p>
+            <p class="ref"><b>A regra:</b> CTN art. 37 e parágrafos. Preponderância é mais de 50% da receita operacional vinda de transações imobiliárias, apurada nos 2 anos anteriores e 2 posteriores, ou nos 3 anos seguintes se a empresa iniciou atividade há menos de 2 anos.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag new">janela aberta</span><span class="q">Alugar pela holding ficou mais barato até 2028</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> aluguel recebido na pessoa física paga até 27,5% de imposto de renda. Na holding, no lucro presumido, fica entre 11% e 15%. Isso já era vantagem, e a reforma tributária melhorou ela por alguns anos.</p>
+            <p><b>A janela:</b> aluguel tem desconto de 70% na alíquota dos novos impostos, e durante 2027 e 2028 as alíquotas ainda entram baixas. Nesse período a holding tende a pagar menos do que paga hoje. Depois de 2030 a carga sobe e passa o patamar atual.</p>
+            <p><b>Por que interessa aqui:</b> a holding fica com a dívida do consórcio e sem receita nenhuma. Colocar os imóveis para alugar resolve isso, gera caixa dentro da própria empresa e ainda aproveita a janela. É a saída mais limpa para o descasamento entre a pessoa física e a holding.</p>
+            <p><b>Prazo que já começou:</b> desde 1º de agosto de 2026 valem as obrigações acessórias, incluindo emissão de nota fiscal de serviço no aluguel.</p>
+            <p class="ref"><b>A regra:</b> LC 214/2025, arts. 255 a 260, regime específico de bens imóveis: redução de 70% nas alíquotas de IBS e CBS na locação, regime de caixa e redutor social de até R$ 600 por mês por unidade residencial. Art. 487 traz opção de transição a 3,65% até 2028, sem direito a crédito nem ao redutor. Pessoa física vira contribuinte se tiver receita acima do limite e mais de três imóveis alugados, requisitos cumulativos (Decreto 12.955/2026, art. 382).</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag warn">mudou agora</span><span class="q">Passar as quotas para os filhos ficou mais caro em São Paulo</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> o imposto de doação e herança em São Paulo era 4% para todo mundo. Desde janeiro de 2026 ele virou progressivo e vai de 2% a 8%, conforme o tamanho do patrimônio. Para patrimônio grande, praticamente dobrou.</p>
+            <p><b>Por que importa:</b> colocar os imóveis na holding é só a primeira metade do planejamento. A segunda é doar as quotas para os herdeiros, normalmente guardando o usufruto, que é o direito de continuar recebendo a renda e mandando nas decisões. É nessa doação que o imposto incide.</p>
+            <p><b>O que avaliar:</b> se a doação for acontecer de qualquer jeito, adiantar tem valor quando o patrimônio tende a valorizar, porque o imposto é calculado sobre o valor de hoje. Vale montar essa conta separada, com o contador.</p>
+            <p class="ref"><b>A regra:</b> LC 227 e legislação estadual de SP, vigência janeiro de 2026. Faixas em UFESP: até 10 mil 2%, de 10 mil a 85 mil 4%, de 85 mil a 280 mil 6%, de 280 mil a 500 mil 7%, acima de 500 mil 8%. A faixa de 8% começa perto de R$ 18,8 milhões.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag off">porta fechada</span><span class="q">Havia uma chance de atualizar o valor pagando só 4%, mas ela acabou</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> em 2024 o governo abriu uma janela para atualizar o valor dos imóveis na declaração pagando 4% de imposto, muito menos que os 15% a 22,5% normais. Quem atualizou naquela época carrega hoje um custo de aquisição alto, e paga bem menos imposto ao vender.</p>
+            <p><b>Vale verificar:</b> pergunte ao cliente se ele fez essa opção em 2024. Se fez, o valor de aquisição a usar na simulação é o atualizado, não o original, e a conta do imposto muda bastante para melhor.</p>
+            <p><b>O prazo acabou</b> em dezembro de 2024 e não foi reaberto. Quem não entrou paga as alíquotas normais.</p>
+            <p class="ref"><b>A regra:</b> Lei 14.973/2024, arts. 6º a 8º. Pessoa física 4% definitivo, pessoa jurídica 6% de IRPJ mais 4% de CSLL. Opção pela DABIM até 16/12/2024. Venda antes de 15 anos da atualização faz o benefício ser aproveitado de forma proporcional ao tempo decorrido.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag warn">o ponto sensível</span><span class="q">A operação precisa ter motivo além de pagar menos imposto</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> montar uma estrutura só para pagar menos imposto, sem nenhuma razão de negócio por trás, é onde a Receita costuma atacar. O que sustenta uma holding é o propósito real: organizar a sucessão, proteger o patrimônio, profissionalizar a gestão dos aluguéis, evitar inventário.</p>
+            <p><b>O que ajuda na prática:</b> a empresa ter atividade de verdade, contabilidade em dia, contratos formais, a operação acontecer em tempos razoáveis e não tudo na mesma semana, e o valor dos imóveis ser sustentado por laudo de avaliação. Vender imóvel para a própria empresa é operação entre partes ligadas, então a documentação precisa ser sólida.</p>
+            <p><b>Nesta operação:</b> existe uma razão econômica clara, que é transformar patrimônio parado em capital com liquidez, mantendo os imóveis na família. Isso é defensável, mas precisa estar escrito e documentado desde o início, não construído depois que alguém pergunta.</p>
+            <p class="ref"><b>A regra:</b> CTN art. 116, parágrafo único, e a jurisprudência do CARF sobre propósito negocial e substância sobre a forma. Não existe lista fechada do que é aceito, o que aumenta a importância da documentação.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lgf">Este quadro é um resumo para orientar a conversa, não é parecer jurídico nem contábil. Cada item traz a referência para o contador ou advogado do cliente conferir e validar antes de qualquer decisão.</div>
+    </div>
+
+    <div id="ana">
+      <div class="acols">
+        <div class="ac">
+          <h3>Estrutura da carta · por milhão</h3>
+          <div class="r"><span class="k">Carta a contratar</span><span class="v" id="e1">R$ 0</span></div>
+          <div class="r"><span class="k">Categoria</span><span class="v" id="e2">R$ 0</span></div>
+          <div class="r"><span class="k">Embutido, não sai do bolso</span><span class="v" id="e3">R$ 0</span></div>
+          <div class="r"><span class="k">Lance total</span><span class="v" id="e4">R$ 0</span></div>
+          <div class="r hi"><span class="k">Recurso próprio</span><span class="v" id="e5">R$ 0</span></div>
+          <div class="r"><span class="k">Taxa mínima pra se pagar</span><span class="v" id="e6">0%</span></div>
+          <div class="r"><span class="k">Alíquota efetiva do IR</span><span class="v" id="e7">0%</span></div>
+        </div>
+        <div class="ac">
+          <h3>Operação completa</h3>
+          <div class="r hi"><span class="k">Recurso próprio total</span><span class="v" id="t1">R$ 0</span></div>
+          <div class="r"><span class="k">Caixa da fase 1</span><span class="v rd" id="t2">R$ 0</span></div>
+          <div class="r"><span class="k">Custos de transferência</span><span class="v rd" id="t3">R$ 0</span></div>
+          <div class="r"><span class="k">Capital investido</span><span class="v bl" id="t4">R$ 0</span></div>
+          <div class="r"><span class="k">Custo total, com reajustes</span><span class="v" id="t6">R$ 0</span></div>
+          <div class="r hi"><span class="k">Capital no fim</span><span class="v" id="t7">R$ 0</span></div>
+        </div>
+        <div class="ac">
+          <h3>Integralizar ou comprar</h3>
+          <div class="r"><span class="k">Integralizar a custo histórico</span><span class="v" id="k1">R$ 0</span></div>
+          <div class="r"><span class="k">Comprar via consórcio</span><span class="v" id="k2">R$ 0</span></div>
+          <div class="r hi"><span class="k">Custo de destravar o capital</span><span class="v" id="k3">R$ 0</span></div>
+          <div class="note">Integralizar tem IR zero e ITBI imune, mas não gera capital nenhum. A diferença é o preço de transformar tijolo em dinheiro investido.</div>
+        </div>
+        <div class="ac">
+          <h3>O redutor</h3>
+          <div class="r"><span class="k">Parcela sem redutor</span><span class="v" id="d1">R$ 0</span></div>
+          <div class="r"><span class="k">Parcela com redutor</span><span class="v g" id="d2">R$ 0</span></div>
+          <div class="r hi"><span class="k">Sai da fase 1</span><span class="v" id="d3">R$ 0</span></div>
+          <div class="r"><span class="k">Diferença no total pago</span><span class="v" id="d4">R$ 0</span></div>
+          <div class="note">O redutor não é desconto, o total pago é o mesmo. Ele tira dinheiro da fase 1, onde não existe receita, e devolve na fase 2, quando o rendimento já entrou.</div>
+        </div>
+      </div>
+      <div class="wr">
+        <div class="t">O que pode quebrar a conta</div>
+        <p><b>Indexação.</b> A parcela sobe pelo INCC todo ano. Se o capital ficar em pós-fixado com taxa nominal travada, o rendimento não acompanha e o capital é consumido. Desligue "o rendimento acompanha o índice" no painel para ver esse cenário.<br>
+        <b>Caixa da fase 1.</b> Sai antes de qualquer receita, e o cliente tem imóvel, não dinheiro. Escalonar em lotes resolve.<br>
+        <b>PF e PJ.</b> O capital fica na pessoa física, a dívida na holding. A saída limpa é a holding alugar os imóveis.<br>
+        <b>Contemplação.</b> O mês é estimativa, não garantia.<br>
+        <b>O crédito também é corrigido.</b> A carta acompanha o INCC até a contemplação, então o valor recebido tende a ser maior que o contratado. Esta simulação não conta esse ganho, é conservadora nesse ponto.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  Valores referenciais, sujeitos a confirmação na formalização. Campanhas e taxas mudam.<br>
+  INCC-M histórico: FGV via Dados de Mercado. Índice de correção do consórcio de imóvel: Porto Seguro.<br>
+  <span id="stamp"></span>
+</div>
+
+</div>
+<script>
+var base='cre', acomp=true;
+var IDS=['vImov','vCusto','vAno','vTx','vRed','vMc','vIdx','vMes','vAdm','vFr','vPz','vEmb','vLan','vItbi','vCart','vIrr'];
+var MASK=['vImov','vCusto'];
+function n(i){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?0:v}
+// campos com separador de milhar
+function nm(i){var s=String(document.getElementById(i).value).replace(/\D/g,'');return s?parseInt(s,10):0}
+function setm(i,v){document.getElementById(i).value=Math.max(Math.round(v),0).toLocaleString('pt-BR')}
+function mask(el){var p=el.selectionStart,L=el.value.length;
+  var s=el.value.replace(/\D/g,'');
+  el.value=s?parseInt(s,10).toLocaleString('pt-BR'):'';
+  var d=el.value.length-L; try{el.setSelectionRange(p+d,p+d)}catch(e){}}
+function ad(d){setm('vImov',nm('vImov')+d);calc()}
+function ac(d){setm('vCusto',nm('vCusto')+d);calc()}
+function pctv(p){setm('vCusto',nm('vImov')*p);calc()}
+function m(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR')}
+function m2(v){return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function pc(v,d){return v.toFixed(d===undefined?2:d).replace('.',',')+'%'}
+function setBase(b){base=b;
+  document.getElementById('bCre').className=(b==='cre'?'on':'');
+  document.getElementById('bCat').className=(b==='cat'?'on':'');calc()}
+function si(v,id){document.getElementById('vIdx').value=v;
+  ['i1','i2','i3','i4'].forEach(function(x){document.getElementById(x).className=(x===id?'on':'')});calc()}
+function sa(){acomp=!acomp;document.getElementById('swAc').className='sw'+(acomp?' on':'');calc()}
+function tog(){var a=document.getElementById('ana');a.classList.toggle('on');
+  document.getElementById('btnA').textContent=a.classList.contains('on')?'Ocultar análise':'Ver análise técnica'}
+function ta(){var b=document.getElementById('advBox');b.classList.toggle('on');
+  document.getElementById('advT').textContent=(b.classList.contains('on')?'▾':'▸')+' Ajustes avançados'}
+function lt(el){el.classList.toggle('on')}
+function lall(){var cs=document.querySelectorAll('.lc'),b=document.getElementById('lallb');
+  var abrir=b.textContent.indexOf('Abrir')===0;
+  for(var i=0;i<cs.length;i++){if(abrir)cs[i].classList.add('on');else cs[i].classList.remove('on')}
+  b.textContent=abrir?'Fechar todos':'Abrir todos'}
+function det(i){var d=document.getElementById('dt'+i),p=document.getElementById('pl'+i);
+  d.classList.toggle('on');p.classList.toggle('on');
+  p.textContent=d.classList.contains('on')?'fechar':'+ info'}
+function irGC(g){var f=[[5e6,.15],[5e6,.175],[2e7,.20],[Infinity,.225]],ir=0,r=g;
+  for(var i=0;i<f.length;i++){var p=Math.min(r,f[i][0]);ir+=p*f[i][1];r-=p;if(r<=0)break}return ir}
+// Redutores legais do ganho de capital
+// Lei 7.713/88 art.18 (imoveis ate 1988) + Lei 11.196/05 art.40 (FR1 e FR2)
+var T7713={1970:.95,1971:.90,1972:.85,1973:.80,1974:.75,1975:.70,1976:.65,1977:.60,
+  1978:.55,1979:.50,1980:.45,1981:.40,1982:.35,1983:.30,1984:.25,1985:.20,1986:.15,1987:.10,1988:.05};
+function redutores(ano,mesesAteVenda){
+  var hoje=new Date(), anoV=hoje.getFullYear()+Math.floor((hoje.getMonth()+mesesAteVenda)/12);
+  var mesV=(hoje.getMonth()+mesesAteVenda)%12;
+  var r7=0;
+  if(ano<=1969)r7=1; else if(T7713[ano]!==undefined)r7=T7713[ano];
+  // m1: meses da aquisicao ate nov/2005 (so p/ imoveis anteriores)
+  var m1=0;
+  if(ano<2006){var mesesAq=ano*12; var nov05=2005*12+10; m1=Math.max(nov05-mesesAq,0)}
+  // m2: de dez/2005 (ou aquisicao, se posterior) ate a venda
+  var ini=ano<2006?(2005*12+11):(ano*12);
+  var m2=Math.max((anoV*12+mesV)-ini,0);
+  var FR1=m1>0?1/Math.pow(1.0060,m1):1;
+  var FR2=m2>0?1/Math.pow(1.0035,m2):1;
+  return {r7:r7,FR1:FR1,FR2:FR2,fator:(1-r7)*FR1*FR2,m1:m1,m2:m2,anoV:anoV}
+}
+function eng(V,adm,fr,red,mc,pz,pe,pl){
+  var k=1+adm+fr,fe=(base==='cat'?pe*k:pe),fl=(base==='cat'?pl*k:pl);
+  if(fe>=.98)fe=.98;
+  var C=V/(1-fe),cat=C*k,emb=C*fe,lance=C*fl,prop=Math.max(lance-emb,0);
+  var pi=cat/pz,pr=pi*(1-red);
+  var nova=Math.max((cat-pr*mc-lance)/(pz-mc),pi/2);
+  return{C:C,cat:cat,emb:emb,lance:lance,prop:prop,pi:pi,pr:pr,nova:nova,fase1:pr*mc,tot:pr*mc+prop+nova*(pz-mc)}}
+// Porto: 1o reajuste no 14o mes, depois a cada 12
+function nre(t){return t<14?0:Math.floor((t-14)/12)+1}
+function calc(){
+  var V=nm('vImov'); if(V<=0)V=1;
+  var custo=Math.min(Math.max(nm('vCusto'),0),V);
+  var tx=n('vTx')/100, red=n('vRed')/100, idx=n('vIdx')/100;
+  var pz=Math.max(Math.round(n('vPz')),2), mc=Math.round(n('vMc'));
+  if(mc<1)mc=1; if(mc>=pz)mc=pz-1;
+  var adm=n('vAdm')/100,fr=n('vFr')/100,pe=n('vEmb')/100,pl=n('vLan')/100;
+  var ITBI=n('vItbi')/100,CART=n('vCart')/100,IRR=n('vIrr')/100;
+  var mes=Math.min(Math.max(Math.round(n('vMes')),1),pz);
+
+  document.getElementById('hPct').textContent='Hoje: '+pc(custo/V*100,0)+' do valor.';
+  document.getElementById('hBase').textContent=base==='cre'
+    ?'Padrão da tabela Porto: embutido de '+pc(pe*100,0)+' calculado sobre o crédito contratado.'
+    :'Calculando sobre a categoria, o que dá um embutido maior em reais.';
+
+  var E=eng(V,adm,fr,red,mc,pz,pe,pl);
+  var ganho=Math.max(V-custo,0);
+  var RD=redutores(Math.round(n('vAno')),mc);
+  var baseTrib=ganho*RD.fator;
+  var ir=irGC(baseTrib), irSem=irGC(ganho);
+  document.getElementById('hRed').innerHTML='Quanto mais antigo, menor o imposto. Redutores legais cortam <b>'+
+    pc((1-RD.fator)*100,0)+'</b> do ganho tributável'+(irSem-ir>0?', economia de <b>'+m(irSem-ir)+'</b>':'')+'.';
+  var custos=ir+V*(ITBI+CART), liq=V-custos;
+  var rend=liq*tx*(1-IRR), sobra=rend-E.nova;
+  var u=1e6/V, fase1=E.fase1+E.prop;
+
+  // ---- projecao mes a mes ----
+  var saldo=liq, pagoTot=0, zera=null, txm=tx, pMes=0, sMes=liq, pFim=0;
+  var mTx=Math.pow(1+idx,1/12)-1;          // crescimento mensal do rendimento, se acompanhar
+  for(var t=1;t<=pz;t++){
+    var f=Math.pow(1+idx,nre(t));
+    var p=(t<=mc?E.pr:E.nova)*f;
+    pagoTot+=p;
+    if(t>mc){
+      var txt=acomp?tx*Math.pow(1+mTx,t-mc):tx;
+      saldo=saldo*(1+txt*(1-IRR))-p;
+      if(saldo<0&&zera===null)zera=t;
+    }
+    if(t===mes){pMes=p; sMes=(t<=mc?liq:saldo)}
+    if(t===pz)pFim=saldo;
+  }
+  var custoTot=pagoTot+E.prop;
+
+  var h=document.getElementById('hS');
+  h.textContent=m(sobra); h.className='big'+(sobra<0?' neg':'');
+  document.getElementById('hPm').textContent=m(sobra*u);
+  document.getElementById('hC').textContent=(E.nova>0?(rend/E.nova).toFixed(2).replace('.',','):'0,00')+'x';
+
+  document.getElementById('s1').textContent='nos primeiros '+mc+' meses';
+  document.getElementById('a1').textContent=m(E.prop);
+  document.getElementById('a2').textContent=m(E.pr);
+  document.getElementById('a2b').textContent='durante '+mc+' meses';
+  document.getElementById('a3').textContent=m(fase1);
+  document.getElementById('b1').textContent=m(V);
+  document.getElementById('b2').textContent='- '+m(custos);
+  document.getElementById('b3').textContent=m(liq);
+  document.getElementById('c1').textContent=m(rend);
+  document.getElementById('c2').textContent=m(E.nova);
+  document.getElementById('c2b').textContent='no primeiro mês, antes dos reajustes';
+  var c3=document.getElementById('c3');
+  c3.textContent=m(sobra); c3.className='lv '+(sobra<0?'rd':'g');
+  document.getElementById('s3').textContent=sobra>0?'e paga a parcela sozinho':'e não cobre a parcela';
+
+  // ---- faixa do tempo ----
+  document.getElementById('anoLb').textContent='(ano '+(mes/12).toFixed(1).replace('.',',')+')';
+  document.getElementById('w1').textContent=m(pMes);
+  document.getElementById('w1b').textContent=mes<14?'ainda sem reajuste':nre(mes)+' reajuste'+(nre(mes)>1?'s':'')+' aplicado'+(nre(mes)>1?'s':'')+', +'+pc((pMes/(mes<=mc?E.pr:E.nova)-1)*100,0);
+  document.getElementById('w2').textContent=m(sMes);
+  document.getElementById('w2b').textContent=mes<=mc?'ainda não recebeu':(sMes>=liq?'acima do inicial':'abaixo do inicial');
+  document.getElementById('w3').textContent=m(custoTot);
+  var w4=document.getElementById('w4');
+  w4.textContent=m(pFim); w4.className='v '+(pFim<0?'rd':'g');
+  document.getElementById('w4b').textContent=zera?'capital acaba no mês '+zera:'capital sobrevive aos '+pz+' meses';
+  document.getElementById('s4').textContent=zera
+    ? 'a parcela sobe pelo INCC e consome o capital antes do fim'
+    : 'a parcela sobe todo ano, e o capital aguenta até o fim';
+  var tt=Math.max(custoTot+Math.max(pFim,0),1);
+  document.getElementById('bar1').style.cssText='width:'+(custoTot/tt*100)+'%;background:#e05d5d';
+  document.getElementById('bar2').style.cssText='width:'+(Math.max(pFim,0)/tt*100)+'%;background:#3ddc84';
+  document.getElementById('bl1').textContent='pago no consórcio '+m(custoTot);
+  document.getElementById('bl2').textContent='sobra de capital '+m(Math.max(pFim,0));
+
+  // ---- rentabilidade do capital ----
+  var anos=(pz-mc)/12, ganhoCap=pFim-liq;
+  var totPct=liq>0?(pFim/liq-1)*100:0;
+  var aaPct=(liq>0&&pFim>0&&anos>0)?(Math.pow(pFim/liq,1/anos)-1)*100:0;
+  var mult=liq>0?pFim/liq:0;
+  var r1=document.getElementById('r1'); r1.textContent=(ganhoCap>=0?'+ ':'')+m(ganhoCap);
+  r1.className='rv '+(ganhoCap>=0?'g':'rd');
+  var r2=document.getElementById('r2'); r2.textContent=(totPct>=0?'+':'')+pc(totPct,1);
+  r2.className='rv '+(totPct>=0?'gd':'rd');
+  var r3=document.getElementById('r3'); r3.textContent=(aaPct>=0?'+':'')+pc(aaPct,2);
+  r3.className='rv '+(aaPct>=0?'gd':'rd');
+  document.getElementById('r4').textContent=mult.toFixed(2).replace('.',',')+'x';
+  document.getElementById('r5').innerHTML= pFim>0
+    ? 'Entraram <b>'+m(liq)+'</b> e no fim dos '+(pz-mc)+' meses de investimento o capital está em <b>'+m(pFim)+'</b>, já tendo pago <b>'+m(custoTot)+'</b> de parcelas ao longo do caminho. É um retorno de <b>'+pc(aaPct,2)+' ao ano</b> sobre o que foi investido, líquido de imposto e já descontando tudo que saiu para o consórcio.'
+    : 'Nesta configuração as parcelas consomem todo o capital antes do fim. O rendimento não sustenta o reajuste da parcela.';
+
+  // ---- + info ----
+  document.getElementById('x11').textContent=m(E.C);
+  document.getElementById('x12').textContent=m(E.cat);
+  document.getElementById('x13').textContent=m(E.lance);
+  document.getElementById('x14').textContent=m(E.emb);
+  document.getElementById('x15').textContent=m(E.prop);
+  document.getElementById('x16').textContent=m(E.pi);
+  document.getElementById('x17').textContent=m(E.pr);
+  document.getElementById('x14b').textContent=pc(E.emb/E.C*100,1)+' do crédito · '+pc(E.emb/E.cat*100,1)+' da categoria';
+  document.getElementById('x13b').textContent=pc(E.lance/E.C*100,1)+' do crédito · '+pc(E.lance/E.cat*100,1)+' da categoria';
+  document.getElementById('x18').textContent='Pra receber '+m(V)+' líquido, a carta precisa ser maior exatamente no tamanho do embutido, porque ele sai de dentro dela. Por isso o que a carta tem "a mais" sempre bate com o embutido, não é erro de conta. O que muda de verdade é a base: aqui os percentuais estão sendo calculados sobre '+(base==='cre'?'o crédito':'a categoria')+'. Troque em ajustes avançados se o grupo usar a outra base.';
+  document.getElementById('x21').textContent=m(V);
+  document.getElementById('x22').textContent='- '+m(custo);
+  document.getElementById('x23').textContent=m(ganho);
+  document.getElementById('x23b').textContent='- '+m(ganho-baseTrib);
+  document.getElementById('x23c').textContent=m(baseTrib);
+  document.getElementById('x24').textContent='- '+m(ir);
+  document.getElementById('x25').textContent='- '+m(V*ITBI);
+  document.getElementById('x26').textContent='- '+m(V*CART);
+  document.getElementById('x27').textContent=m(liq);
+  document.getElementById('x28').textContent='O imposto incide só sobre o ganho, não sobre o valor total. Como o imóvel foi comprado em '+Math.round(n('vAno'))+', a lei permite reduzir a base em '+pc((1-RD.fator)*100,0)+' pelo tempo de posse, o que economiza '+m(irSem-ir)+'. Depois disso a alíquota é progressiva por faixa'+(baseTrib>0?', e a efetiva aqui ficou em '+pc(ir/baseTrib*100):'')+'. Como é compra e venda, e não integralização, o ITBI é devido normalmente.';
+  var bruto=liq*tx;
+  document.getElementById('x31').textContent=m(liq);
+  document.getElementById('x32').textContent=m(bruto);
+  document.getElementById('x33').textContent='- '+m(bruto*IRR);
+  document.getElementById('x34').textContent=m(rend);
+  document.getElementById('x35').textContent='- '+m(E.nova);
+  document.getElementById('x36').textContent=m(sobra);
+  var txmin=(liq>0&&IRR<1)?E.nova/(liq*(1-IRR)):0;
+  document.getElementById('x37').textContent=pc(txmin*100,3)+' a.m.';
+  document.getElementById('x38').textContent='Abaixo de '+pc(txmin*100,3)+' ao mês o rendimento deixa de cobrir a parcela já no primeiro mês. E a parcela sobe todo ano, então essa taxa mínima também sobe.';
+
+  document.getElementById('e1').textContent=m(E.C*u);
+  document.getElementById('e2').textContent=m(E.cat*u);
+  document.getElementById('e3').textContent=m(E.emb*u);
+  document.getElementById('e4').textContent=m(E.lance*u);
+  document.getElementById('e5').textContent=m(E.prop*u);
+  document.getElementById('e6').textContent=pc(txmin*100,3)+' a.m.';
+  document.getElementById('e7').textContent=ganho>0?pc(ir/ganho*100):'0,00%';
+  document.getElementById('t1').textContent=m(E.prop);
+  document.getElementById('t2').textContent=m(fase1);
+  document.getElementById('t3').textContent=m(custos);
+  document.getElementById('t4').textContent=m(liq);
+  document.getElementById('t6').textContent=m(custoTot);
+  var t7=document.getElementById('t7');
+  t7.textContent=m(pFim); t7.className='v '+(pFim<0?'rd':'g');
+  document.getElementById('k1').textContent=m(V*CART);
+  document.getElementById('k2').textContent=m(custos);
+  document.getElementById('k3').textContent=m(custos-V*CART);
+  var SR=eng(V,adm,fr,0,mc,pz,pe,pl);
+  document.getElementById('d1').textContent=m2(SR.pr*u);
+  document.getElementById('d2').textContent=m2(E.pr*u);
+  document.getElementById('d3').textContent=m(SR.fase1-E.fase1);
+  document.getElementById('d4').textContent=m(E.tot-SR.tot);
+
+  document.getElementById('lgRed').innerHTML='os imóveis foram comprados em '+Math.round(n('vAno'))+
+    ', então na venda o redutor corta <b>'+pc((1-RD.fator)*100,0)+'</b> do lucro tributável. O imposto cai de '+
+    m(irSem)+' para <b>'+m(ir)+'</b>, uma economia de <b>'+m(irSem-ir)+'</b>. Mude o ano no painel para ver o efeito.';
+
+  document.getElementById('rot').innerHTML=
+    'Você entra com <b>'+m(E.prop)+'</b> de lance e paga <b>'+m(E.pr)+'</b> por mês durante '+mc+
+    ' meses. Quando a carta é contemplada, a holding compra os imóveis de você por <b>'+m(V)+
+    '</b>. Descontado o imposto, o ITBI e o cartório, sobram <b>'+m(liq)+
+    '</b> limpos na sua mão. Investido a '+pc(tx*100)+' ao mês, esse dinheiro rende <b>'+m(rend)+
+    '</b> por mês, e a parcela passa a ser <b>'+m(E.nova)+'</b>. '+
+    (sobra>0?'O rendimento paga a parcela e ainda sobra <b>'+m(sobra)+'</b> por mês.':'<span class="rd">Nessa taxa o rendimento não cobre a parcela.</span>')+
+    ' A parcela é corrigida pelo INCC todo ano, então no mês '+mes+' ela estará em <b>'+m(pMes)+
+    '</b>. No fim dos '+pz+' meses, '+(pFim>0
+      ?'os imóveis estão na holding e você ainda tem <b>'+m(pFim)+'</b> de capital.'
+      :'<span class="rd">o capital terá sido consumido pelas parcelas.</span>');
+}
+IDS.forEach(function(i){var el=document.getElementById(i);
+  if(MASK.indexOf(i)>=0)el.addEventListener('input',function(){mask(this);calc()});
+  else el.addEventListener('input',calc)});
+document.getElementById('stamp').textContent='Atualizado em '+new Date().toLocaleDateString('pt-BR');
+calc();
+</script>
+</body>
+</html>
