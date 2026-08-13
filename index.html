@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Imóveis para a Holding · Simulador</title>
+<title>Simuladores de Consórcio · Holding e Cotas</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0b0e14;color:#e6e9f0;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:28px 32px 60px;-webkit-font-smoothing:antialiased}
@@ -148,6 +148,41 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 .wr{background:#1a1419;border:1px solid #33202a;border-radius:12px;padding:14px 16px;margin-top:12px}
 .wr .t{color:#e05d5d;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
 .wr p{font-size:13px;color:#aab2c4;line-height:1.6}
+/* ===== abas ===== */
+.tabs{display:flex;gap:6px;background:#0d1119;border:1px solid #1e2536;border-radius:12px;padding:5px;margin-bottom:20px}
+.tabs button{flex:1;background:none;border:none;color:#8b93a7;padding:12px 10px;border-radius:9px;font-size:14px;font-family:inherit;cursor:pointer;font-weight:500;letter-spacing:-.01em}
+.tabs button:hover{color:#e6e9f0;background:#131824}
+.tabs button.on{background:#e8b34b;color:#0b0e14;font-weight:650}
+.tabpane{display:none}
+.tabpane.on{display:block}
+.subtabs{display:flex;gap:6px;margin-bottom:18px}
+.subtabs button{background:#0d1119;border:1px solid #1e2536;color:#8b93a7;padding:9px 20px;border-radius:9px;font-size:13px;font-family:inherit;cursor:pointer}
+.subtabs button:hover{border-color:#2f3a56;color:#e6e9f0}
+.subtabs button.on{background:#1c2334;border-color:#3a4666;color:#e8b34b;font-weight:600}
+.ksec{display:none}
+.ksec.on{display:block}
+.jr2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:900px){.jr2{grid-template-columns:1fr}}
+.mo.alerta{border-color:#33202a;background:#16121a}
+.dot.warn{background:#e05d5d;color:#0b0e14}
+.ktab{margin-top:16px;overflow-x:auto}
+.ktab table{width:100%;border-collapse:collapse;font-size:13px}
+.ktab th{text-align:right;padding:8px 10px;color:#6f7789;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;border-bottom:1px solid #1e2536;white-space:nowrap}
+.ktab th:first-child,.ktab td:first-child{text-align:left}
+.ktab td{text-align:right;padding:9px 10px;border-bottom:1px solid #161c29;font-variant-numeric:tabular-nums;color:#c9d0de;white-space:nowrap}
+.ktab tr:last-child td{border-bottom:none}
+.ktab tr.hot td{background:#171d2b;color:#fff;font-weight:600}
+.ktab tr.bad td{color:#8a6068}
+.mkt{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:820px){.mkt{grid-template-columns:1fr 1fr}}
+.mk{background:#0d1119;border:1px solid #1e2536;border-radius:11px;padding:14px 15px;text-align:center}
+.mv{font-size:23px;font-weight:700;color:#e8b34b;font-variant-numeric:tabular-nums;line-height:1.1}
+.ml{font-size:11px;color:#7d8699;margin-top:5px;line-height:1.35}
+.mkb{display:flex;gap:4px;margin-top:16px;align-items:flex-end;height:70px}
+.mkb .bb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.mkb .bbar{width:100%;border-radius:4px 4px 0 0;min-height:3px}
+.mkb .bl2{font-size:10px;color:#6f7789;text-align:center;line-height:1.25}
+.mkb .bn{font-size:12px;font-weight:700;color:#c9d0de}
 .foot{text-align:center;color:#4e566a;font-size:11.5px;margin-top:34px;line-height:1.7}
 </style>
 </head>
@@ -156,12 +191,18 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 
 <header>
   <div>
-    <h1>Imóveis para a Holding</h1>
-    <div class="s">A holding compra os imóveis com carta de consórcio contemplada. O capital que entra é investido.</div>
+    <h1 id="hTit">Imóveis para a Holding</h1>
+    <div class="s" id="hSub">A holding compra os imóveis com carta de consórcio contemplada. O capital que entra é investido.</div>
   </div>
   <button class="ghost" id="btnA" onclick="tog()">Ver análise técnica</button>
 </header>
 
+<div class="tabs">
+  <button id="tbH" class="on" onclick="tab('hold')">Holding</button>
+  <button id="tbC" onclick="tab('cotas')">Cotas</button>
+</div>
+
+<div id="tHold" class="tabpane on">
 <div class="grid">
   <div class="panel">
     <h2>Simulação</h2>
@@ -492,6 +533,229 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
     </div>
   </div>
 </div>
+</div>
+
+<div id="tCotas" class="tabpane">
+  <div class="subtabs">
+    <button id="sbVend" class="on" onclick="kSec('vend')">Vender uma cota</button>
+    <button id="sbComp" onclick="kSec('comp')">Comprar uma carta</button>
+  </div>
+
+  <!-- ============ VENDER ============ -->
+  <div id="kVend" class="ksec on">
+  <div class="grid">
+    <div class="panel">
+      <h2>A cota</h2>
+      <div class="f main">
+        <label>Crédito da carta</label>
+        <input type="text" inputmode="numeric" id="kCred" value="1.000.000">
+      </div>
+      <div class="steps">
+        <button onclick="kAd(-1e5)">−100k</button><button onclick="kAd(1e5)">+100k</button>
+        <button onclick="kAd(5e5)">+500k</button><button onclick="kAd(1e6)">+1M</button>
+      </div>
+      <div class="two">
+        <div class="f"><label>Contempla no mês</label><input type="number" id="kMc" value="24" step="1"></div>
+        <div class="f"><label>Ágio na venda (%)</label><input type="number" id="kAgio" value="30" step="1"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label>Lance embutido (%)</label><input type="number" id="kLan" value="20" step="1"></div>
+        <div class="f"><label>Redutor da parcela (%)</label><input type="number" id="kRed" value="50" step="5"></div>
+      </div>
+
+      <div class="sw on" id="kSwLiq" onclick="kLiq()">
+        <div class="box">✓</div>
+        <div class="tt">Descontar imposto e taxa de cessão</div>
+      </div>
+      <div class="hint" style="margin-bottom:4px">Desligado mostra o número bruto, igual à planilha original. Ligado desconta o que realmente sai.</div>
+
+      <div class="adv">
+        <button class="advb" onclick="kAdv()" id="kAdvT">▸ Ajustes avançados</button>
+        <div id="kAdvBox">
+          <div class="three" style="margin-top:12px">
+            <div class="f"><label>Prazo (m)</label><input type="number" id="kPz" value="200" step="10"></div>
+            <div class="f"><label>Tx adm+FR %</label><input type="number" id="kTxa" value="20" step="0.5"></div>
+            <div class="f"><label>INCC % a.a.</label><input type="number" id="kIncc" value="6.59" step="0.1"></div>
+          </div>
+          <div class="two">
+            <div class="f"><label>IR do lucro %</label><input type="number" id="kIr" value="15" step="0.5"></div>
+            <div class="f"><label>Taxa de cessão %</label><input type="number" id="kCes" value="1" step="0.1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="hero">
+        <div>
+          <div class="big" id="kH">R$ 0</div>
+          <div class="lb" id="kHl">lucro de quem monta a cota e vende contemplada</div>
+        </div>
+        <div class="rgt">
+          <div><div class="v" id="kHm">0%</div><div class="l">ao mês</div></div>
+          <div><div class="v" id="kHa">0%</div><div class="l">ao ano</div></div>
+        </div>
+      </div>
+
+      <div class="jr2">
+        <div class="mo">
+          <div class="tp"><div class="dot">V</div><div class="hd"><div class="tt">Quem vende</div><div class="st" id="kVs"></div></div>
+            <button class="plus" id="kPl1" onclick="kDet(1)">+ info</button></div>
+          <div class="det" id="kDt1">
+            <div class="dr"><span class="a">Parcela mensal</span><span class="b" id="kx11">R$ 0</span></div>
+            <div class="dr"><span class="a">Crédito no mês da venda</span><span class="b" id="kx12">R$ 0</span></div>
+            <div class="dr"><span class="a">Lance embutido, sai da carta</span><span class="b" id="kx13">R$ 0</span></div>
+            <div class="dr"><span class="a">Crédito que sobra na carta</span><span class="b" id="kx14">R$ 0</span></div>
+            <div class="dr acc"><span class="a">Ágio recebido</span><span class="b" id="kx15">R$ 0</span></div>
+            <div class="dr"><span class="a">Imposto sobre o lucro</span><span class="b" id="kx16">R$ 0</span></div>
+            <div class="dr"><span class="a">Taxa de cessão</span><span class="b" id="kx17">R$ 0</span></div>
+            <div class="tx" id="kx18"></div>
+          </div>
+          <div class="li"><div class="lk">Investiu em parcelas</div><div class="lv" id="kv1">R$ 0</div><div class="ls" id="kv1b"></div></div>
+          <div class="li"><div class="lk">Recebe de ágio</div><div class="lv gd" id="kv2">R$ 0</div></div>
+          <div class="li tot"><div class="lk">Lucro</div><div class="lv g" id="kv3">R$ 0</div><div class="ls" id="kv3b"></div></div>
+        </div>
+
+        <div class="mo">
+          <div class="tp"><div class="dot">C</div><div class="hd"><div class="tt">Quem compra</div><div class="st">assume a cota e o saldo</div></div>
+            <button class="plus" id="kPl2" onclick="kDet(2)">+ info</button></div>
+          <div class="det" id="kDt2">
+            <div class="dr"><span class="a">Categoria da cota</span><span class="b" id="kx21">R$ 0</span></div>
+            <div class="dr"><span class="a">Menos o lance embutido</span><span class="b" id="kx22">R$ 0</span></div>
+            <div class="dr"><span class="a">Menos o que o vendedor pagou</span><span class="b" id="kx23">R$ 0</span></div>
+            <div class="dr acc"><span class="a">Saldo devedor que assume</span><span class="b" id="kx24">R$ 0</span></div>
+            <div class="dr"><span class="a">Paga no total</span><span class="b" id="kx25">R$ 0</span></div>
+            <div class="dr"><span class="a">Para receber de crédito</span><span class="b" id="kx26">R$ 0</span></div>
+            <div class="tx" id="kx27"></div>
+          </div>
+          <div class="li"><div class="lk">Paga de ágio, à vista</div><div class="lv rd" id="kc1">R$ 0</div></div>
+          <div class="li"><div class="lk">Recebe de crédito na hora</div><div class="lv bl" id="kc2">R$ 0</div><div class="ls" id="kc2b"></div></div>
+          <div class="li tot"><div class="lk">Custo do dinheiro</div><div class="lv" id="kc3">0%</div><div class="ls" id="kc3b"></div></div>
+        </div>
+      </div>
+
+      <div class="tl">
+        <div class="th">
+          <div><div class="tt">A janela fecha</div><div class="st" id="kJs">quanto mais cedo contemplar e vender, maior o retorno</div></div>
+        </div>
+        <div class="tlg">
+          <div class="tc"><div class="k">Ágio mínimo pra empatar</div><div class="v gd" id="kw1">0%</div><div class="s" id="kw1b"></div></div>
+          <div class="tc"><div class="k">Vira prejuízo no mês</div><div class="v rd" id="kw2">0</div><div class="s" id="kw2b"></div></div>
+          <div class="tc"><div class="k">Melhor retorno realista</div><div class="v g" id="kw3">0%</div><div class="s" id="kw3b"></div></div>
+          <div class="tc"><div class="k">Fecha pros dois lados?</div><div class="v" id="kw4">?</div><div class="s" id="kw4b"></div></div>
+        </div>
+        <div class="ktab">
+          <table id="kTabela"><thead><tr><th>Contempla no mês</th><th>Investido</th><th>Ágio</th><th>Lucro</th><th>Retorno a.m.</th><th>Custo pro comprador</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+      <div class="rot">
+        <span class="h">Como contar</span>
+        <div id="kRot"></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- ============ COMPRAR ============ -->
+  <div id="kComp" class="ksec">
+  <div class="grid">
+    <div class="panel">
+      <h2>A carta ofertada</h2>
+      <div class="f main">
+        <label>Crédito da carta</label>
+        <input type="text" inputmode="numeric" id="cCred" value="200.000">
+      </div>
+      <div class="f">
+        <label>Entrada pedida</label>
+        <input type="text" inputmode="numeric" id="cEnt" value="99.000">
+        <div class="steps" style="margin-top:7px">
+          <button onclick="cPct(.35)">35%</button><button onclick="cPct(.40)">40%</button>
+          <button onclick="cPct(.45)">45%</button><button onclick="cPct(.50)">50%</button>
+        </div>
+        <div class="hint" id="cEntH"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label>Parcelas restantes</label><input type="number" id="cPz" value="160" step="1"></div>
+        <div class="f"><label>Valor da parcela</label><input type="text" inputmode="numeric" id="cParc" value="1.100"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label>Taxa de transferência</label><input type="text" inputmode="numeric" id="cTr" value="2.000"></div>
+        <div class="f"><label>Financiamento % a.a.</label><input type="number" id="cFin" value="11" step="0.5"></div>
+      </div>
+      <div class="hint">Compare o custo da carta com a taxa de um financiamento imobiliário equivalente.</div>
+    </div>
+
+    <div>
+      <div class="hero">
+        <div>
+          <div class="big" id="cH">0%</div>
+          <div class="lb">custo real do dinheiro nessa carta, ao ano</div>
+        </div>
+        <div class="rgt">
+          <div><div class="v" id="cHv">R$ 0</div><div class="l">sobra no bolso hoje</div></div>
+          <div><div class="v" id="cHc">R$ 0</div><div class="l">custo total</div></div>
+        </div>
+      </div>
+
+      <div class="jr2">
+        <div class="mo">
+          <div class="tp"><div class="dot">1</div><div class="hd"><div class="tt">O negócio</div><div class="st">o que entra e o que sai</div></div></div>
+          <div class="li"><div class="lk">Recebe de crédito</div><div class="lv bl" id="cg1">R$ 0</div></div>
+          <div class="li"><div class="lk">Paga de entrada e transferência</div><div class="lv rd" id="cg2">R$ 0</div></div>
+          <div class="li"><div class="lk">Assume em parcelas</div><div class="lv" id="cg3">R$ 0</div><div class="ls" id="cg3b"></div></div>
+          <div class="li tot"><div class="lk">Custo total da operação</div><div class="lv" id="cg4">R$ 0</div><div class="ls">tudo que pagou menos o crédito recebido</div></div>
+        </div>
+
+        <div class="mo alerta">
+          <div class="tp"><div class="dot warn">!</div><div class="hd"><div class="tt">Os dois jeitos de contar</div><div class="st">e por que dão números tão diferentes</div></div></div>
+          <div class="li"><div class="lk">Método da planilha, taxa linear</div><div class="lv" id="cm1">0%</div><div class="ls">custo total dividido pelo prazo</div></div>
+          <div class="li"><div class="lk">Custo real, taxa composta</div><div class="lv gd" id="cm2">0%</div><div class="ls">o que de fato se paga pelo dinheiro</div></div>
+          <div class="li tot"><div class="lk">Diferença</div><div class="lv rd" id="cm3">0 pp</div><div class="ls" id="cm3b"></div></div>
+        </div>
+      </div>
+
+      <div class="tl">
+        <div class="th"><div><div class="tt">Contra um financiamento</div><div class="st" id="cvs">mesmo valor, mesmo prazo</div></div></div>
+        <div class="tlg">
+          <div class="tc"><div class="k">Parcela da carta</div><div class="v" id="cf1">R$ 0</div><div class="s" id="cf1b"></div></div>
+          <div class="tc"><div class="k">Parcela do financiamento</div><div class="v" id="cf2">R$ 0</div><div class="s" id="cf2b"></div></div>
+          <div class="tc"><div class="k">Diferença por mês</div><div class="v" id="cf3">R$ 0</div><div class="s" id="cf3b"></div></div>
+          <div class="tc"><div class="k">Diferença no total</div><div class="v" id="cf4">R$ 0</div><div class="s" id="cf4b"></div></div>
+        </div>
+        <div class="note" id="cfn"></div>
+      </div>
+
+      <div class="lg">
+        <div class="lgh">
+          <div><div class="tt">Como está o mercado</div><div class="st">218 cartas de imóvel ofertadas, posição de 29 de julho de 2026</div></div>
+        </div>
+        <div class="mkt">
+          <div class="mk"><div class="mv" id="mk1">0%</div><div class="ml">custo real mediano</div></div>
+          <div class="mk"><div class="mv" id="mk2">0%</div><div class="ml">entrada mediana</div></div>
+          <div class="mk"><div class="mv" id="mk3">0</div><div class="ml">prazo mediano</div></div>
+          <div class="mk"><div class="mv" id="mk4">0</div><div class="ml">cartas abaixo de 10% a.a.</div></div>
+        </div>
+        <div class="ktab" style="margin-top:16px">
+          <table id="mkAdm"><thead><tr><th>Administradora</th><th>Cartas</th><th>Crédito típico</th><th>Entrada</th><th>Prazo</th><th>Método planilha</th><th>Custo real</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="mkb" id="mkBandas"></div>
+        <div class="note">A coluna do método da planilha divide o custo total pelo prazo, o que dá uma taxa linear. Ela não é comparável com juros de financiamento, que são compostos. A diferença mediana entre os dois métodos nessas 218 cartas é de <b id="mkGap">0</b> pontos percentuais. Posição de julho de 2026, sujeita a confirmação de disponibilidade e condições com a administradora.</div>
+      </div>
+
+      <div class="wr">
+        <div class="t">Antes de fechar qualquer carta</div>
+        <p><b>Confirme a contemplação.</b> Carta contemplada de verdade tem documento da administradora. Sem isso, é cota comum sendo vendida como contemplada.<br>
+        <b>Cheque a saúde do grupo.</b> Índice de inadimplência alto e grupo perto do encerramento mudam o risco.<br>
+        <b>Veja se o crédito serve.</b> O crédito é corrigido pelo INCC e pode não cobrir o imóvel alvo na data do uso.<br>
+        <b>Prazo curto engana.</b> Carta com poucas parcelas e entrada alta tem custo anual altíssimo na conta composta, mesmo parecendo barata no total.<br>
+        <b>A transferência precisa de anuência.</b> A administradora analisa crédito do comprador e pode recusar.</p>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
 
 <div class="foot">
   Valores referenciais, sujeitos a confirmação na formalização. Campanhas e taxas mudam.<br>
@@ -740,6 +1004,249 @@ IDS.forEach(function(i){var el=document.getElementById(i);
   else el.addEventListener('input',calc)});
 document.getElementById('stamp').textContent='Atualizado em '+new Date().toLocaleDateString('pt-BR');
 calc();
+
+/* ================= ABAS ================= */
+function tab(t){
+  var T={hold:['Imóveis para a Holding','A holding compra os imóveis com carta de consórcio contemplada. O capital que entra é investido.'],
+         cotas:['Cotas de Consórcio','Montar e vender uma cota contemplada com ágio, ou comprar uma carta no mercado secundário.']};
+  document.getElementById('hTit').textContent=T[t][0];
+  document.getElementById('hSub').textContent=T[t][1];
+  document.getElementById('btnA').style.display=(t==='hold'?'':'none');
+  ['hold','cotas'].forEach(function(x){
+    document.getElementById('t'+(x==='hold'?'Hold':'Cotas')).classList.toggle('on',x===t);
+    document.getElementById('tb'+(x==='hold'?'H':'C')).classList.toggle('on',x===t);
+  });
+  window.scrollTo(0,0);
+}
+function kSec(s){
+  document.getElementById('kVend').classList.toggle('on',s==='vend');
+  document.getElementById('kComp').classList.toggle('on',s==='comp');
+  document.getElementById('sbVend').className=(s==='vend'?'on':'');
+  document.getElementById('sbComp').className=(s==='comp'?'on':'');
+}
+
+/* ================= UTIL ================= */
+var kLiquido=true;
+function kn(i){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?0:v}
+function knm(i){var s=String(document.getElementById(i).value).replace(/\D/g,'');return s?parseInt(s,10):0}
+function ksetm(i,v){document.getElementById(i).value=Math.max(Math.round(v),0).toLocaleString('pt-BR')}
+function kAd(d){ksetm('kCred',knm('kCred')+d);kCalc()}
+function cPct(p){ksetm('cEnt',knm('cCred')*p);cCalc()}
+function kLiq(){kLiquido=!kLiquido;document.getElementById('kSwLiq').className='sw'+(kLiquido?' on':'');kCalc()}
+function kAdv(){var b=document.getElementById('kAdvBox');b.classList.toggle('on');
+  document.getElementById('kAdvT').textContent=(b.classList.contains('on')?'▾':'▸')+' Ajustes avançados'}
+function kDet(i){var d=document.getElementById('kDt'+i),p=document.getElementById('kPl'+i);
+  d.classList.toggle('on');p.classList.toggle('on');
+  p.textContent=d.classList.contains('on')?'fechar':'+ info'}
+/* TIR por bisseccao, robusta */
+function tir(f){
+  var lo=-0.99, hi=3, mid, v;
+  function vpl(r){var s=0;for(var i=0;i<f.length;i++)s+=f[i]/Math.pow(1+r,i);return s}
+  if(vpl(lo)*vpl(hi)>0) return NaN;
+  for(var k=0;k<200;k++){mid=(lo+hi)/2; v=vpl(mid); if(Math.abs(v)<1e-7)break; if(vpl(lo)*v<0)hi=mid; else lo=mid;}
+  return mid;
+}
+
+/* ================= VENDER ================= */
+function kEng(mc){
+  var C0=knm('kCred'), PZ=Math.max(Math.round(kn('kPz')),2);
+  var TXA=kn('kTxa')/100, INCC=kn('kIncc')/100, LAN=kn('kLan')/100;
+  var AG=kn('kAgio')/100, RED=kn('kRed')/100;
+  if(mc<1)mc=1; if(mc>=PZ)mc=PZ-1;
+  var cred=C0*Math.pow(1+INCC,Math.floor((mc-1)/12));
+  var inv=0;
+  for(var t=1;t<=mc;t++){
+    var c=C0*Math.pow(1+INCC,Math.floor((t-1)/12));
+    inv+=c*(1+TXA)/PZ*RED;
+  }
+  var parc=cred*(1+TXA)/PZ*RED;
+  var posl=cred*(1-LAN), emb=cred*LAN, agio=posl*AG;
+  var cat=cred*(1+TXA), sd=cat-emb-inv, n=PZ-mc, pnova=n>0?sd/n:0;
+  var bruto=agio-inv;
+  var ir=(kLiquido&&bruto>0)?bruto*(kn('kIr')/100):0;
+  var ces=kLiquido?posl*(kn('kCes')/100):0;
+  var lucro=bruto-ir-ces;
+  var pct=inv>0?lucro/inv:0;
+  var mens=(pct>-1)?Math.pow(1+pct,1/mc)-1:NaN;
+  var liqhoje=posl-agio;
+  var f=[liqhoje]; for(var j=0;j<n;j++)f.push(-pnova);
+  var tc=tir(f);
+  return {mc:mc,PZ:PZ,cred:cred,inv:inv,parc:parc,posl:posl,emb:emb,agio:agio,cat:cat,sd:sd,n:n,
+          pnova:pnova,bruto:bruto,ir:ir,ces:ces,lucro:lucro,pct:pct,mens:mens,liqhoje:liqhoje,
+          tirc:tc, tirc_a:isNaN(tc)?NaN:Math.pow(1+tc,12)-1, agmin:posl>0?inv/posl:0};
+}
+function kCalc(){
+  var mc=Math.round(kn('kMc'));
+  var d=kEng(mc);
+  document.getElementById('kMc').value=d.mc;
+
+  var h=document.getElementById('kH');
+  h.textContent=m(d.lucro); h.className='big'+(d.lucro<0?' neg':'');
+  document.getElementById('kHl').textContent=(kLiquido?'lucro líquido':'lucro bruto')+' de quem monta a cota e vende contemplada';
+  document.getElementById('kHm').textContent=isNaN(d.mens)?'-':(d.mens>=0?'+':'')+pc(d.mens*100,2);
+  document.getElementById('kHa').textContent=isNaN(d.mens)?'-':(d.mens>=0?'+':'')+pc((Math.pow(1+d.mens,12)-1)*100,1);
+
+  document.getElementById('kVs').textContent='paga '+d.mc+' parcelas e vende';
+  document.getElementById('kv1').textContent=m(d.inv);
+  document.getElementById('kv1b').textContent=m(d.parc)+' por mês × '+d.mc;
+  document.getElementById('kv2').textContent=m(d.agio);
+  var v3=document.getElementById('kv3');
+  v3.textContent=m(d.lucro); v3.className='lv '+(d.lucro<0?'rd':'g');
+  document.getElementById('kv3b').textContent=(d.inv>0?pc(d.pct*100,0)+' sobre o investido':'');
+
+  document.getElementById('kc1').textContent=m(d.agio);
+  document.getElementById('kc2').textContent=m(d.posl);
+  document.getElementById('kc2b').textContent='sobra '+m(d.liqhoje)+' no bolso dele hoje';
+  var c3=document.getElementById('kc3');
+  c3.textContent=isNaN(d.tirc_a)?'-':pc(d.tirc_a*100,2)+' a.a.';
+  c3.className='lv '+(!isNaN(d.tirc_a)&&d.tirc_a<0.12?'g':'gd');
+  document.getElementById('kc3b').textContent=d.n+' parcelas de '+m(d.pnova);
+
+  document.getElementById('kx11').textContent=m(d.parc);
+  document.getElementById('kx12').textContent=m(d.cred);
+  document.getElementById('kx13').textContent=m(d.emb);
+  document.getElementById('kx14').textContent=m(d.posl);
+  document.getElementById('kx15').textContent=m(d.agio);
+  document.getElementById('kx16').textContent=kLiquido?'- '+m(d.ir):'não descontado';
+  document.getElementById('kx17').textContent=kLiquido?'- '+m(d.ces):'não descontado';
+  document.getElementById('kx18').textContent='O lance embutido sai de dentro da carta, então não custa nada do bolso, mas reduz o crédito de '+m(d.cred)+' para '+m(d.posl)+'. O ágio incide sobre esse crédito reduzido. Como as parcelas são pagas com redutor, o investido cresce devagar, e é isso que sustenta o retorno alto nos primeiros meses.';
+
+  document.getElementById('kx21').textContent=m(d.cat);
+  document.getElementById('kx22').textContent='- '+m(d.emb);
+  document.getElementById('kx23').textContent='- '+m(d.inv);
+  document.getElementById('kx24').textContent=m(d.sd);
+  document.getElementById('kx25').textContent=m(d.agio+d.sd);
+  document.getElementById('kx26').textContent=m(d.posl);
+  document.getElementById('kx27').textContent='O comprador paga o ágio à vista e assume o saldo devedor em '+d.n+' parcelas. Ele recebe '+m(d.posl)+' de crédito na hora e desembolsa '+m(d.agio)+', então sai com '+m(d.liqhoje)+' líquido no bolso e uma dívida parcelada. É por isso que o custo dele é comparável a um financiamento.';
+
+  document.getElementById('kw1').textContent=pc(d.agmin*100,1);
+  document.getElementById('kw1b').textContent='hoje você usa '+pc(kn('kAgio'),0);
+  var vira=null;
+  for(var t=1;t<d.PZ;t++){var e=kEng(t); if(e.lucro<0){vira=t;break}}
+  document.getElementById('kw2').textContent=vira?vira:'não vira';
+  document.getElementById('kw2b').textContent=vira?('ano '+Math.floor((vira-1)/12+1)+', depois disso é prejuízo'):'no prazo simulado';
+  var best=null,bv=-1e9;
+  for(var t2=12;t2<Math.min(d.PZ,121);t2++){var e2=kEng(t2); if(!isNaN(e2.mens)&&e2.mens>bv){bv=e2.mens;best=t2}}
+  document.getElementById('kw3').textContent=best?pc(bv*100,2):'-';
+  document.getElementById('kw3b').textContent=best?('contemplando no mês '+best):'';
+  var fecha=d.lucro>0&&!isNaN(d.tirc_a)&&d.tirc_a<0.12;
+  var w4=document.getElementById('kw4');
+  w4.textContent=fecha?'sim':(d.lucro>0?'só pro vendedor':'não');
+  w4.className='v '+(fecha?'g':(d.lucro>0?'gd':'rd'));
+  document.getElementById('kw4b').textContent=fecha?'comprador paga menos que financiamento':(d.lucro>0?'comprador paga caro demais':'o vendedor perde dinheiro');
+
+  var tb=document.querySelector('#kTabela tbody'); tb.innerHTML='';
+  [6,12,18,24,36,48,60,90,120].forEach(function(t){
+    if(t>=d.PZ)return;
+    var e=kEng(t);
+    var tr=document.createElement('tr');
+    if(t===d.mc)tr.className='hot'; else if(e.lucro<0)tr.className='bad';
+    tr.innerHTML='<td>'+t+'</td><td>'+m(e.inv)+'</td><td>'+m(e.agio)+'</td><td>'+m(e.lucro)+
+      '</td><td>'+(isNaN(e.mens)?'-':pc(e.mens*100,2))+'</td><td>'+(isNaN(e.tirc_a)?'-':pc(e.tirc_a*100,1)+' a.a.')+'</td>';
+    tb.appendChild(tr);
+  });
+
+  document.getElementById('kRot').innerHTML=
+    'Você entra numa cota de <b>'+m(knm('kCred'))+'</b> pagando <b>'+m(d.parc)+
+    '</b> por mês, que é meia parcela por causa do redutor. No mês '+d.mc+' a cota é contemplada por lance embutido, que sai de dentro da própria carta e não custa nada do seu bolso. Você já colocou <b>'+
+    m(d.inv)+'</b> até aqui. A carta contemplada vale <b>'+m(d.posl)+'</b> de crédito e você a vende com ágio de '+pc(kn('kAgio'),0)+
+    ', recebendo <b>'+m(d.agio)+'</b>. '+(kLiquido?'Descontado imposto e taxa de cessão, sobra ':'Sobra ')+'<b>'+m(d.lucro)+
+    '</b> de lucro. '+(fecha?'E fecha para quem compra também: ele pega '+m(d.posl)+' de crédito a '+pc(d.tirc_a*100,2)+' ao ano, abaixo de um financiamento.':'')+
+    ' <b>A janela fecha:</b> a partir do mês '+(vira||d.PZ)+' o que você já pagou de parcelas passa o ágio e a operação vira prejuízo.';
+}
+
+/* ================= COMPRAR ================= */
+var MKT={"data":"29/07/2026","n":218,"adms":[{"nome":"Bradesco","n":54,"cred":129575,"ent":49.5,"pz":152,"tir":16.4,"simples":4.8},{"nome":"Porto Seguro","n":44,"cred":107500,"ent":49.4,"pz":177,"tir":14,"simples":4.3},{"nome":"Mycon","n":28,"cred":88390,"ent":51.8,"pz":150,"tir":17.2,"simples":4.7},{"nome":"Itaú","n":27,"cred":169240,"ent":51.4,"pz":133,"tir":17.5,"simples":5.1},{"nome":"Santander","n":24,"cred":208600,"ent":49,"pz":182,"tir":12.7,"simples":3.7},{"nome":"CNP","n":16,"cred":226750,"ent":37.3,"pz":100,"tir":23.6,"simples":8.5},{"nome":"Rodobens","n":14,"cred":111168,"ent":47.3,"pz":182,"tir":14,"simples":4.4},{"nome":"Yamaha","n":8,"cred":152500,"ent":49.2,"pz":211,"tir":12.1,"simples":3.6}],"tir":{"min":6,"p25":13.7,"mediana":15.7,"p75":17.8,"max":110.6},"bandas":[{"rot":"abaixo de 10%","n":9},{"rot":"10% a 15%","n":79},{"rot":"15% a 20%","n":97},{"rot":"20% a 30%","n":25},{"rot":"acima de 30%","n":8}],"entrada":{"min":27.6,"mediana":49.5,"max":62.2},"prazoMed":160,"gap":11.1};
+
+function cCalc(){
+  var cred=knm('cCred'), ent=knm('cEnt'), pz=Math.max(Math.round(kn('cPz')),1);
+  var parc=knm('cParc'), tr=knm('cTr'), fin=kn('cFin')/100;
+  var sd=pz*parc, custo=ent+tr+sd-cred, liq=cred-ent-tr;
+  var simples=cred>0?((ent+sd-cred)/cred)/pz*12:0;
+  var f=[liq]; for(var i=0;i<pz;i++)f.push(-parc);
+  var t=liq>0?tir(f):NaN, taa=isNaN(t)?NaN:Math.pow(1+t,12)-1;
+
+  document.getElementById('cEntH').textContent=cred>0?('representa '+pc(ent/cred*100,1)+' do crédito. Mediana do mercado: '+pc(MKT.entrada.mediana,1)):'';
+
+  var h=document.getElementById('cH');
+  h.textContent=isNaN(taa)?'-':pc(taa*100,2);
+  h.className='big'+(!isNaN(taa)&&taa>fin?' neg':'');
+  document.getElementById('cHv').textContent=m(liq);
+  document.getElementById('cHc').textContent=m(custo);
+
+  document.getElementById('cg1').textContent=m(cred);
+  document.getElementById('cg2').textContent='- '+m(ent+tr);
+  document.getElementById('cg3').textContent=m(sd);
+  document.getElementById('cg3b').textContent=pz+' parcelas de '+m(parc);
+  document.getElementById('cg4').textContent=m(custo);
+
+  document.getElementById('cm1').textContent=pc(simples*100,2)+' a.a.';
+  document.getElementById('cm2').textContent=isNaN(taa)?'-':pc(taa*100,2)+' a.a.';
+  var dif=isNaN(taa)?0:(taa-simples)*100;
+  document.getElementById('cm3').textContent=(dif>=0?'+':'')+pc(dif,1).replace('%','')+' pp';
+  document.getElementById('cm3b').textContent=isNaN(taa)?'':('o custo real é '+(simples>0?(taa/simples).toFixed(1).replace('.',','):'-')+'x o número da planilha');
+
+  /* financiamento equivalente: mesmo valor liquido, mesmo prazo */
+  var i=fin>0?Math.pow(1+fin,1/12)-1:0;
+  var pfin=i>0?liq*i/(1-Math.pow(1+i,-pz)):liq/pz;
+  document.getElementById('cf1').textContent=m(parc);
+  document.getElementById('cf1b').textContent='pelos '+pz+' meses';
+  document.getElementById('cf2').textContent=m(pfin);
+  document.getElementById('cf2b').textContent='a '+pc(fin*100,1)+' ao ano';
+  var dm=pfin-parc;
+  var f3=document.getElementById('cf3');
+  f3.textContent=(dm>=0?'+ ':'- ')+m(Math.abs(dm));
+  f3.className='v '+(dm>=0?'g':'rd');
+  document.getElementById('cf3b').textContent=dm>=0?'a carta sai mais barata':'o financiamento sai mais barato';
+  var dt=(pfin-parc)*pz;
+  var f4=document.getElementById('cf4');
+  f4.textContent=(dt>=0?'+ ':'- ')+m(Math.abs(dt));
+  f4.className='v '+(dt>=0?'g':'rd');
+  document.getElementById('cf4b').textContent='ao longo de todo o prazo';
+  document.getElementById('cfn').innerHTML=isNaN(taa)?'Confira os valores: com essa entrada não sobra crédito líquido.':
+    ('Comparação feita sobre o mesmo valor líquido de <b>'+m(liq)+'</b> e o mesmo prazo de '+pz+
+     ' meses. A carta custa <b>'+pc(taa*100,2)+' ao ano</b> contra <b>'+pc(fin*100,1)+
+     '</b> do financiamento. '+(taa<fin?'Nesse caso a carta ganha.':'Nesse caso o financiamento ganha, e vale renegociar a entrada ou procurar outra carta.')+
+     ' O financiamento tem seguro e taxas que não estão aqui, e a carta não dá o imóvel na hora se o grupo atrasar a liberação.');
+
+  document.getElementById('mk1').textContent=pc(MKT.tir.mediana,1);
+  document.getElementById('mk2').textContent=pc(MKT.entrada.mediana,1);
+  document.getElementById('mk3').textContent=MKT.prazoMed+' m';
+  document.getElementById('mk4').textContent=MKT.bandas[0].n+' de '+MKT.n;
+  document.getElementById('mkGap').textContent=pc(MKT.gap,1).replace('%','');
+
+  var tb=document.querySelector('#mkAdm tbody');
+  if(tb && !tb.hasChildNodes()){
+    MKT.adms.forEach(function(a){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td>'+a.nome+'</td><td>'+a.n+'</td><td>'+m(a.cred)+'</td><td>'+pc(a.ent,1)+
+        '</td><td>'+a.pz+' m</td><td>'+pc(a.simples,1)+'</td><td><b>'+pc(a.tir,1)+'</b></td>';
+      tb.appendChild(tr);
+    });
+  }
+  var bx=document.getElementById('mkBandas');
+  if(bx && !bx.hasChildNodes()){
+    var mx=Math.max.apply(null,MKT.bandas.map(function(b){return b.n}));
+    MKT.bandas.forEach(function(b,ix){
+      var cor=['#3ddc84','#8fd17a','#e8b34b','#e08a5d','#e05d5d'][ix];
+      var d2=document.createElement('div'); d2.className='bb';
+      d2.innerHTML='<div class="bn">'+b.n+'</div><div class="bbar" style="height:'+(b.n/mx*44+3)+'px;background:'+cor+'"></div><div class="bl2">'+b.rot+'</div>';
+      bx.appendChild(d2);
+    });
+  }
+}
+['kCred','kMc','kAgio','kLan','kRed','kPz','kTxa','kIncc','kIr','kCes'].forEach(function(i){
+  var el=document.getElementById(i);
+  if(i==='kCred')el.addEventListener('input',function(){mask(this);kCalc()});
+  else el.addEventListener('input',kCalc);
+});
+['cCred','cEnt','cPz','cParc','cTr','cFin'].forEach(function(i){
+  var el=document.getElementById(i);
+  if(['cCred','cEnt','cParc','cTr'].indexOf(i)>=0)el.addEventListener('input',function(){mask(this);cCalc()});
+  else el.addEventListener('input',cCalc);
+});
+kCalc(); cCalc();
+
 </script>
 </body>
 </html>
