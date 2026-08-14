@@ -308,6 +308,44 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
       <input type="number" id="vAno" value="2011" step="1">
       <div class="hint" id="hRed"></div>
     </div>
+
+    <h3 style="margin-top:15px">Cenário tributário</h3>
+    <div class="f">
+      <label>Como os imóveis entram na holding</label>
+      <div class="idx" style="grid-template-columns:1fr 1fr">
+        <button id="rC" class="on" onclick="setRota('compra')">Compra e venda</button>
+        <button id="rI" onclick="setRota('integra')">Integralização</button>
+      </div>
+      <div class="hint" id="hRota"></div>
+    </div>
+    <div id="boxInt" style="display:none">
+      <div class="f">
+        <label>A holding vai ter receita de aluguel</label>
+        <div class="idx" style="grid-template-columns:1fr 1fr">
+          <button id="fN" class="on" onclick="setFat(0)">Não, só sucessória</button>
+          <button id="fS" onclick="setFat(1)">Sim, vai alugar</button>
+        </div>
+        <div class="hint" id="hFat"></div>
+      </div>
+      <div class="f">
+        <label>Integraliza por qual valor</label>
+        <div class="idx" style="grid-template-columns:1fr 1fr">
+          <button id="vH" class="on" onclick="setVal('hist')">Custo histórico</button>
+          <button id="vM" onclick="setVal('merc')">Valor de mercado</button>
+        </div>
+        <div class="hint" id="hVal"></div>
+      </div>
+    </div>
+    <div class="f">
+      <label>Doação das quotas aos herdeiros</label>
+      <div class="idx" style="grid-template-columns:1fr 1fr 1fr">
+        <button id="dN" class="on" onclick="setDoa('nao')">Não simular</button>
+        <button id="dC" onclick="setDoa('cheia')">Doação cheia</button>
+        <button id="dU" onclick="setDoa('usuf')">Com usufruto</button>
+      </div>
+      <div class="hint" id="hDoa"></div>
+    </div>
+
     <div class="two">
       <div class="f"><label>Rende (% ao mês)</label><input type="number" id="vTx" value="1" step="0.05"></div>
       <div class="f"><label>Contempla no mês</label><input type="number" id="vMc" value="24" step="1"></div>
@@ -409,9 +447,9 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
           <div class="dr acc"><span class="a">Limpo na sua mão</span><span class="b" id="x27">R$ 0</span></div>
           <div class="tx" id="x28"></div>
         </div>
-        <div class="li"><div class="lk">A holding te paga</div><div class="lv" id="b1">R$ 0</div></div>
-        <div class="li"><div class="lk">Imposto, ITBI e cartório</div><div class="lv rd" id="b2">R$ 0</div></div>
-        <div class="li tot"><div class="lk">Limpo na sua mão</div><div class="lv bl" id="b3">R$ 0</div></div>
+        <div class="li"><div class="lk" id="b1k">A holding te paga</div><div class="lv" id="b1">R$ 0</div></div>
+        <div class="li"><div class="lk">Imposto, ITBI e cartório</div><div class="lv rd" id="b2">R$ 0</div><div class="ls" id="b2b"></div></div>
+        <div class="li tot"><div class="lk" id="b3k">Limpo na sua mão</div><div class="lv bl" id="b3">R$ 0</div></div>
       </div>
 
       <div class="mo">
@@ -456,6 +494,32 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
       </div>
       <div class="bar"><i id="bar1"></i><i id="bar2"></i></div>
       <div class="barl"><span id="bl1"></span><span id="bl2"></span></div>
+    </div>
+
+    <div class="tl" id="cardTrib">
+      <div class="th">
+        <div><div class="tt" id="tribT">Custos de levar os imóveis para a holding</div><div class="st" id="tribS"></div></div>
+      </div>
+      <div class="tlg">
+        <div class="tc"><div class="k">ITBI</div><div class="v" id="q1">R$ 0</div><div class="s" id="q1b"></div></div>
+        <div class="tc"><div class="k">Imposto sobre o ganho</div><div class="v" id="q2">R$ 0</div><div class="s" id="q2b"></div></div>
+        <div class="tc"><div class="k">Cartório e registro</div><div class="v" id="q3">R$ 0</div><div class="s">escritura e averbação</div></div>
+        <div class="tc"><div class="k">Total para transferir</div><div class="v gd" id="q4">R$ 0</div><div class="s" id="q4b"></div></div>
+      </div>
+      <div class="note" id="tribN"></div>
+    </div>
+
+    <div class="tl" id="cardSuc" style="display:none">
+      <div class="th">
+        <div><div class="tt">Sucessão: o ITCMD das quotas</div><div class="st">São Paulo, progressivo de 2% a 8% desde janeiro de 2026</div></div>
+      </div>
+      <div class="tlg">
+        <div class="tc"><div class="k">Base de cálculo</div><div class="v bl" id="u1">R$ 0</div><div class="s" id="u1b"></div></div>
+        <div class="tc"><div class="k">Alíquota efetiva</div><div class="v" id="u2">0%</div><div class="s">média sobre a base</div></div>
+        <div class="tc"><div class="k" id="u3k">Paga na doação</div><div class="v rd" id="u3">R$ 0</div><div class="s" id="u3b"></div></div>
+        <div class="tc"><div class="k">Economia da escolha</div><div class="v g" id="u4">R$ 0</div><div class="s" id="u4b"></div></div>
+      </div>
+      <div class="note" id="sucN"></div>
     </div>
 
     <div class="rot">
@@ -911,6 +975,35 @@ function eng(V,adm,fr,red,mc,pz,pe,pl){
   return{C:C,cat:cat,emb:emb,lance:lance,prop:prop,pi:pi,pr:pr,nova:nova,fase1:pr*mc,tot:pr*mc+prop+nova*(pz-mc)}}
 // Porto: 1o reajuste no 14o mes, depois a cada 12
 function nre(t){return t<14?0:Math.floor((t-14)/12)+1}
+/* ===== cenario tributario ===== */
+var ROTA='compra', FAT=0, VALINT='hist', DOA='nao';
+function setRota(r){ROTA=r;
+  document.getElementById('rC').className=(r==='compra'?'on':'');
+  document.getElementById('rI').className=(r==='integra'?'on':'');
+  document.getElementById('boxInt').style.display=(r==='integra'?'block':'none');
+  calc()}
+function setFat(f){FAT=f;
+  document.getElementById('fN').className=(f?'':'on');
+  document.getElementById('fS').className=(f?'on':'');calc()}
+function setVal(v){VALINT=v;
+  document.getElementById('vH').className=(v==='hist'?'on':'');
+  document.getElementById('vM').className=(v==='merc'?'on':'');calc()}
+function setDoa(d){DOA=d;
+  document.getElementById('dN').className=(d==='nao'?'on':'');
+  document.getElementById('dC').className=(d==='cheia'?'on':'');
+  document.getElementById('dU').className=(d==='usuf'?'on':'');calc()}
+
+/* ITCMD-SP progressivo (LC 227, vigencia jan/2026). UFESP calibrada p/ faixa de 8% ~ R$18,8M */
+var UFESP=37.60;
+function itcmd(v){
+  var f=[[10000*UFESP,.02],[85000*UFESP,.04],[280000*UFESP,.06],[500000*UFESP,.07],[Infinity,.08]];
+  var imp=0, ant=0;
+  for(var i=0;i<f.length;i++){
+    if(v>ant){imp+=(Math.min(v,f[i][0])-ant)*f[i][1]; ant=f[i][0];} else break;
+  }
+  return imp;
+}
+
 function calc(){
   var V=nm('vImov'); if(V<=0)V=1;
   var custo=Math.min(Math.max(nm('vCusto'),0),V);
@@ -930,10 +1023,37 @@ function calc(){
   var ganho=Math.max(V-custo,0);
   var RD=redutores(Math.round(n('vAno')),mc);
   var baseTrib=ganho*RD.fator;
-  var ir=irGC(baseTrib), irSem=irGC(ganho);
+  var irCheio=irGC(baseTrib), irSem=irGC(ganho);
   document.getElementById('hRed').innerHTML='Quanto mais antigo, menor o imposto. Redutores legais cortam <b>'+
-    pc((1-RD.fator)*100,0)+'</b> do ganho tributável'+(irSem-ir>0?', economia de <b>'+m(irSem-ir)+'</b>':'')+'.';
-  var custos=ir+V*(ITBI+CART), liq=V-custos;
+    pc((1-RD.fator)*100,0)+'</b> do ganho tributável'+(irSem-irCheio>0?', economia de <b>'+m(irSem-irCheio)+'</b>':'')+'.';
+
+  /* ---- CENARIO TRIBUTARIO: decide ITBI e ganho de capital ---- */
+  var integra = (ROTA==='integra');
+  var aCusto  = integra && VALINT==='hist';
+  var ir      = (integra && aCusto) ? 0 : irCheio;          /* art.23 Lei 9.249/95 */
+  var capital = aCusto ? custo : V;                          /* valor integralizado */
+  var excedente = integra ? Math.max(V-capital,0) : 0;       /* Tema 796 STF */
+  var itbiPrep = integra ? (FAT ? V*ITBI : 0) : V*ITBI;      /* preponderancia / compra e venda */
+  var itbiExc  = (integra && !FAT) ? excedente*ITBI : 0;     /* excedente ao capital, mesmo sem receita */
+  var itbi     = integra ? (FAT ? V*ITBI : itbiExc) : V*ITBI;
+  var cart     = V*CART;
+  var custos   = ir+itbi+cart;
+  var liq      = integra ? 0 : V-custos;
+
+  /* ---- textos dos interruptores ---- */
+  document.getElementById('hRota').textContent = integra
+    ? 'Os imóveis entram como capital. Não há venda, então não há dinheiro entrando para o dono.'
+    : 'A holding compra os imóveis. Paga ITBI cheio e o vendedor apura ganho de capital.';
+  document.getElementById('hFat').textContent = FAT
+    ? 'Com receita de aluguel acima de metade do faturamento, o município cobra o ITBI. O Tema 1348 do STF pode mudar isso, mas ainda não decidiu.'
+    : 'Sem receita imobiliária não há preponderância. O TJ-SP firmou isso em maio de 2026 para empresa inativa ou sem faturamento.';
+  document.getElementById('hVal').textContent = aCusto
+    ? 'Pelo valor da declaração, sem ganho de capital. As quotas ficam valendo menos, o que reduz o ITCMD na doação.'
+    : 'Pelo valor de mercado, com ganho de capital agora. Em troca, não sobra excedente para o município cobrar ITBI.';
+  document.getElementById('hDoa').textContent =
+    DOA==='nao' ? 'Ligue para ver quanto custaria passar as quotas aos herdeiros.'
+    : DOA==='cheia' ? 'Doação da propriedade plena, ITCMD pago de uma vez.'
+    : 'O doador guarda o usufruto. Paga 2/3 agora e 1/3 quando a propriedade se consolidar.';
   var rend=liq*tx*(1-IRR), sobra=rend-E.nova;
   var u=1e6/V, fase1=E.fase1+E.prop;
 
@@ -964,8 +1084,76 @@ function calc(){
   document.getElementById('a2').textContent=m(E.pr);
   document.getElementById('a2b').textContent='durante '+mc+' meses';
   document.getElementById('a3').textContent=m(fase1);
+  /* ---- card de custos da transferencia ---- */
+  document.getElementById('tribT').textContent = integra
+    ? 'Custos de integralizar os imóveis na holding' : 'Custos de vender os imóveis para a holding';
+  document.getElementById('tribS').textContent = integra
+    ? (FAT?'holding com receita de aluguel':'holding sem receita, só sucessória')+', integralizando '+(aCusto?'pelo custo histórico':'a valor de mercado')
+    : 'operação onerosa, sem imunidade';
+  var q1=document.getElementById('q1');
+  q1.textContent=m(itbi); q1.className='v '+(itbi>0?'rd':'g');
+  document.getElementById('q1b').textContent = integra
+    ? (FAT ? 'devido, atividade preponderante' : (itbiExc>0 ? 'só sobre o excedente ao capital' : 'imune'))
+    : 'devido, '+pc(ITBI*100,1)+' sobre o valor';
+  var q2=document.getElementById('q2');
+  q2.textContent=m(ir); q2.className='v '+(ir>0?'rd':'g');
+  document.getElementById('q2b').textContent = (integra&&aCusto)
+    ? 'não há ganho a apurar' : 'sobre o ganho, já com redutor de posse';
+  document.getElementById('q3').textContent=m(cart);
+  document.getElementById('q4').textContent=m(custos);
+  document.getElementById('q4b').textContent = V>0 ? pc(custos/V*100,2)+' do valor dos imóveis' : '';
+  var nt='';
+  if(integra && !FAT){
+    nt='Sem receita de aluguel não há atividade preponderante, então o ITBI é imune. O TJ-SP firmou isso em maio de 2026 no IRDR 2386871-86.2024, que vincula os juízes do estado. ';
+    if(itbiExc>0) nt+='<b>Mas atenção:</b> como você integraliza por '+m(capital)+' e os imóveis valem '+m(V)+', sobram '+m(excedente)+' acima do capital social. Pelo Tema 796 do STF, que já está decidido, o município pode cobrar ITBI sobre esse excedente. É o preço de integralizar barato.';
+    else nt+='Integralizando a valor de mercado não sobra excedente, então não há a cobrança do Tema 796.';
+  } else if(integra && FAT){
+    nt='Com receita de aluguel acima de metade do faturamento o município cobra o ITBI. A apuração olha os dois anos anteriores e os dois posteriores, ou os três seguintes se a empresa tiver menos de dois anos. <b>O Tema 1348 do STF discute se a imunidade vale mesmo com atividade imobiliária:</b> o relator propôs que sim, o placar chegou a 4 a 1 a favor do contribuinte, mas o ministro Flávio Dino pediu destaque, os votos perderam efeito e o julgamento recomeça do zero, sem data. Hoje os municípios continuam cobrando.';
+  } else {
+    nt='Compra e venda não tem imunidade nenhuma de ITBI, porque a imunidade do artigo 156 da Constituição vale para integralização de capital, não para operação onerosa. O ganho de capital é apurado na pessoa física vendedora.';
+  }
+  document.getElementById('tribN').innerHTML=nt;
+
+  /* ---- card de sucessao ---- */
+  var cs=document.getElementById('cardSuc');
+  if(DOA==='nao'){ cs.style.display='none'; }
+  else{
+    cs.style.display='block';
+    var baseQ = integra ? capital : V;
+    var impT  = itcmd(baseQ);
+    var agora = DOA==='usuf' ? impT*(2/3) : impT;
+    var dif   = DOA==='usuf' ? impT*(1/3) : 0;
+    var alt   = itcmd(V);
+    document.getElementById('u1').textContent=m(baseQ);
+    document.getElementById('u1b').textContent = (integra&&aCusto) ? 'valor integralizado, não o de mercado' : 'valor de mercado';
+    document.getElementById('u2').textContent = baseQ>0 ? pc(impT/baseQ*100,2) : '0%';
+    document.getElementById('u3k').textContent = DOA==='usuf' ? 'Paga agora, 2/3' : 'ITCMD na doação';
+    document.getElementById('u3').textContent=m(agora);
+    document.getElementById('u3b').textContent = DOA==='usuf' ? 'mais '+m(dif)+' quando consolidar' : 'de uma vez';
+    var eco=Math.max(alt-impT,0);
+    document.getElementById('u4').textContent=m(eco);
+    document.getElementById('u4b').textContent = eco>0 ? 'por integralizar pelo custo' : 'base já é o valor de mercado';
+    var sn='';
+    if(integra&&aCusto) sn='Como as quotas foram integralizadas por '+m(capital)+', o ITCMD incide sobre esse valor e não sobre os '+m(V)+' de mercado. A economia é de <b>'+m(eco)+'</b>. Isso não é subdeclarar: o artigo 23 da Lei 9.249/95 dá expressamente a escolha entre o valor da declaração e o de mercado.';
+    else sn='A base é o valor de mercado das quotas. Integralizando pelo custo histórico a base cairia para '+m(integra?custo:custo)+' e o imposto para '+m(itcmd(custo))+'.';
+    if(DOA==='usuf') sn+=' Com reserva de usufruto, São Paulo deixa pagar 2/3 na doação e adiar 1/3 para quando a propriedade se consolidar, corrigido pela UFESP. <b>O usufruto não reduz o imposto total, ele difere um terço</b> e mantém o doador no controle e recebendo a renda.';
+    document.getElementById('sucN').innerHTML=sn;
+  }
+
+  /* ---- os quadrantes do consorcio so fazem sentido na compra ---- */
+  ['1','2','3'].forEach(function(ix,k){
+    var box=document.querySelectorAll('#tHold .jr .mo')[k];
+    if(box) box.style.opacity = (integra && k!==1) ? '.35' : '1';
+  });
+  document.getElementById('cardTrib').style.order='0';
+
   document.getElementById('b1').textContent=m(V);
+  document.getElementById('b1k').textContent = integra ? 'Valor dos imóveis' : 'A holding te paga';
   document.getElementById('b2').textContent='- '+m(custos);
+  document.getElementById('b2b').textContent = integra
+    ? (itbi>0?'ITBI '+m(itbi)+' mais ':'sem ITBI, ')+(ir>0?'ganho '+m(ir):'sem ganho de capital')
+    : 'ITBI '+m(itbi)+' mais ganho '+m(ir);
+  document.getElementById('b3k').textContent = integra ? 'Entra na sua mão' : 'Limpo na sua mão';
   document.getElementById('b3').textContent=m(liq);
   document.getElementById('c1').textContent=m(rend);
   document.getElementById('c2').textContent=m(E.nova);
