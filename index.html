@@ -183,6 +183,81 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 .mkb .bbar{width:100%;border-radius:4px 4px 0 0;min-height:3px}
 .mkb .bl2{font-size:10px;color:#6f7789;text-align:center;line-height:1.25}
 .mkb .bn{font-size:12px;font-weight:700;color:#c9d0de}
+/* ===== botao gerar PDF ===== */
+.pdfbtn{background:#1c2334;border:1px solid #3a4666;color:#e8b34b;border-radius:9px;padding:9px 16px;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.pdfbtn:hover{background:#e8b34b;border-color:#e8b34b;color:#0b0e14}
+.hacts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ===== documento de impressao ===== */
+#pdfDoc{display:none}
+.pdh{border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:18px}
+.pdh h1{font-size:19px;font-weight:700;letter-spacing:-.01em;margin:0}
+.pdh .sub{font-size:12px;color:#444;margin-top:3px}
+.pdh .dt{font-size:11px;color:#666;margin-top:6px}
+.pds{margin-bottom:16px;break-inside:avoid}
+.pds h2{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#666;margin:0 0 8px;padding-bottom:4px;border-bottom:1px solid #ddd}
+.pdg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px 18px}
+.pdg.d2{grid-template-columns:1fr 1fr}
+.pdi .k{font-size:10px;color:#666;margin-bottom:1px}
+.pdi .v{font-size:14px;font-weight:700;color:#000;font-variant-numeric:tabular-nums}
+.pdi .s{font-size:9.5px;color:#777;margin-top:1px}
+.pdi.big .v{font-size:19px}
+.pdl{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee;font-size:12px}
+.pdl:last-child{border-bottom:none}
+.pdl .k{color:#444}
+.pdl .v{font-weight:700;color:#000;font-variant-numeric:tabular-nums}
+.pdrot{background:#f6f6f6;border-left:3px solid #999;padding:11px 14px;font-size:12px;line-height:1.65;color:#222;break-inside:avoid}
+.pdrot b{font-weight:700}
+.pdtab{width:100%;border-collapse:collapse;font-size:11px}
+.pdtab th{text-align:right;padding:5px 7px;color:#666;font-size:9px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #ccc}
+.pdtab th:first-child,.pdtab td:first-child{text-align:left}
+.pdtab td{text-align:right;padding:5px 7px;border-bottom:1px solid #eee;font-variant-numeric:tabular-nums;color:#222}
+.pdnota{margin-top:22px;padding-top:10px;border-top:1px solid #ccc;font-size:8.2px;line-height:1.5;color:#555;text-align:justify;break-inside:avoid}
+.pdnota b{color:#333}
+
+@media print{
+  @page{margin:13mm 14mm}
+  html,body{background:#fff!important;padding:0!important;margin:0!important}
+  body>*{display:none!important}
+  body>#pdfDoc{display:block!important;color:#000;font-size:12px}
+  #pdfDoc *{color:inherit}
+}
+
+/* ===== celular ===== */
+@media(max-width:820px){
+  body{padding:14px 13px 40px}
+  h1{font-size:20px}
+  header{margin-bottom:16px;gap:12px}
+  header .s{font-size:12.5px}
+  .tabs{margin-bottom:14px;padding:4px}
+  .tabs button{padding:11px 6px;font-size:13.5px}
+  .hero{padding:18px 18px;gap:14px;position:sticky;top:0;z-index:40;
+        box-shadow:0 8px 24px rgba(11,14,20,.55);margin-bottom:16px}
+  .hero .big{font-size:33px}
+  .hero .rgt{gap:20px}
+  .hero .rgt .v{font-size:17px}
+  .hero .lb{font-size:12px;margin-top:5px}
+  .panel{position:static;padding:16px}
+  .grid{gap:14px}
+  .three{grid-template-columns:1fr 1fr}
+  .mo,.tl,.lg,.rot{padding:16px}
+  .li .lv{font-size:20px}
+  .tc .v,.rv{font-size:19px}
+  .rot{font-size:14.5px;padding:16px 17px}
+  .jr,.jr2{gap:12px}
+  .steps button{padding:8px 2px;font-size:11px}
+  .ktab table{font-size:11.5px}
+  .ktab td,.ktab th{padding:7px 6px}
+  .mkb{height:60px}
+  .subtabs button{padding:9px 14px;font-size:12.5px}
+}
+@media(max-width:420px){
+  .hero .big{font-size:28px}
+  .hero{flex-direction:column;align-items:flex-start;gap:12px}
+  .hero .rgt{width:100%;justify-content:space-between;text-align:left;gap:12px}
+  .tlg,.mkt,.rg{grid-template-columns:1fr 1fr}
+  .f.main input{font-size:20px}
+}
 .foot{text-align:center;color:#4e566a;font-size:11.5px;margin-top:34px;line-height:1.7}
 </style>
 </head>
@@ -194,7 +269,10 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
     <h1 id="hTit">Imóveis para a Holding</h1>
     <div class="s" id="hSub">A holding compra os imóveis com carta de consórcio contemplada. O capital que entra é investido.</div>
   </div>
-  <button class="ghost" id="btnA" onclick="tog()">Ver análise técnica</button>
+  <div class="hacts">
+    <button class="ghost" id="btnA" onclick="tog()">Ver análise técnica</button>
+    <button class="pdfbtn" onclick="gerarPDF()">Gerar PDF</button>
+  </div>
 </header>
 
 <div class="tabs">
@@ -764,6 +842,9 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 </div>
 
 </div>
+
+<div id="pdfDoc"></div>
+
 <script>
 var base='cre', acomp=true;
 var IDS=['vImov','vCusto','vAno','vTx','vRed','vMc','vIdx','vMes','vAdm','vFr','vPz','vEmb','vLan','vItbi','vCart','vIrr'];
@@ -1245,6 +1326,160 @@ function cCalc(){
   if(['cCred','cEnt','cParc','cTr'].indexOf(i)>=0)el.addEventListener('input',function(){mask(this);cCalc()});
   else el.addEventListener('input',cCalc);
 });
+/* ================= GERAR PDF ================= */
+var NOTA='<b>Atenção.</b> Este documento é uma simulação de caráter informativo e não constitui proposta, oferta, garantia ou promessa de resultado. Os números apresentados decorrem exclusivamente das premissas informadas no momento do cálculo e mudam se qualquer uma delas mudar. <b>A contemplação por lance não tem data garantida</b>, depende de assembleia e da concorrência do grupo, e o mês utilizado nesta simulação é apenas uma estimativa. <b>O valor de negociação de uma carta contemplada varia com o mercado</b> e com as condições vigentes na data em que a operação for efetivada, podendo ser diferente do considerado aqui. Taxa de administração, fundo de reserva, índices de correção, tributos, custas cartorárias e condições de crédito podem ser alterados pelas administradoras, pelos órgãos reguladores ou pela legislação. Rentabilidade de investimentos é variável e resultados passados não garantem resultados futuros. Este material não constitui recomendação de investimento, consultoria jurídica, contábil ou tributária. Antes de qualquer decisão, confirme as condições vigentes com a administradora e valide os aspectos tributários e sucessórios com contador e advogado.';
+
+function pv(id){var e=document.getElementById(id);return e?e.textContent:''}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function item(k,v,s,big){return '<div class="pdi'+(big?' big':'')+'"><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':'')+'</div>'}
+function linha(k,v){return '<div class="pdl"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>'}
+function sec(t,c){return '<div class="pds"><h2>'+t+'</h2>'+c+'</div>'}
+
+function pdfHolding(){
+  var v=function(i){return document.getElementById(i).value};
+  var h='';
+  h+='<div class="pdh"><h1>Imóveis para a Holding</h1>'+
+     '<div class="sub">Simulação de transferência de imóveis para holding com carta de consórcio contemplada</div>'+
+     '<div class="dt">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div></div>';
+  h+=sec('Premissas utilizadas','<div class="pdg">'+
+      item('Valor dos imóveis','R$ '+v('vImov'))+
+      item('Valor de aquisição','R$ '+v('vCusto'))+
+      item('Ano da compra',v('vAno'))+
+      item('Retorno considerado',v('vTx').replace('.',',')+'% ao mês')+
+      item('Contemplação estimada','mês '+v('vMc'))+
+      item('Redutor da parcela',v('vRed')+'%')+
+      item('Prazo',v('vPz')+' meses')+
+      item('Reajuste anual',v('vIdx').replace('.',',')+'% (INCC)')+
+      item('Taxa administrativa',v('vAdm').replace('.',',')+'% + '+v('vFr').replace('.',',')+'% de fundo')+
+     '</div>');
+  h+=sec('1. O que entra no início','<div class="pdg">'+
+      item('Lance, do próprio bolso',pv('a1'),'',1)+
+      item('Parcela mensal',pv('a2'),pv('a2b'))+
+      item('Total até a carta cair',pv('a3'))+
+     '</div>');
+  h+=sec('2. O imóvel entra na holding','<div class="pdg">'+
+      item('A holding paga',pv('b1'))+
+      item('Imposto, ITBI e cartório',pv('b2'))+
+      item('Líquido para o vendedor',pv('b3'),'',1)+
+     '</div>'+
+     '<div style="margin-top:9px">'+
+      linha('Ganho de capital apurado',pv('x23'))+
+      linha('Redutor legal por tempo de posse',pv('x23b'))+
+      linha('Base tributável',pv('x23c'))+
+      linha('Imposto de renda',pv('x24'))+
+      linha('ITBI',pv('x25'))+
+      linha('Cartório e registro',pv('x26'))+
+     '</div>');
+  h+=sec('3. O capital investido','<div class="pdg">'+
+      item('Rende por mês',pv('c1'))+
+      item('Parcela do consórcio',pv('c2'),pv('c2b'))+
+      item('Sobra por mês',pv('c3'),'',1)+
+     '</div>');
+  h+=sec('Ao longo do consórcio','<div class="pdg d2">'+
+      item('Parcela no mês '+v('vMes'),pv('w1'),pv('w1b'))+
+      item('Capital nesse mês',pv('w2'),pv('w2b'))+
+      item('Total pago no consórcio',pv('w3'),'com todos os reajustes')+
+      item('Capital ao fim do prazo',pv('w4'),pv('w4b'))+
+     '</div>'+
+     '<div class="pdg d2" style="margin-top:10px">'+
+      item('Ganho no período',pv('r1'))+
+      item('Retorno equivalente ao ano',pv('r3'))+
+     '</div>');
+  h+=sec('Resumo da operação','<div class="pdrot">'+document.getElementById('rot').innerHTML+'</div>');
+  h+='<div class="pdnota">'+NOTA+'</div>';
+  return h;
+}
+
+function pdfCotasVender(){
+  var v=function(i){return document.getElementById(i).value};
+  var h='';
+  h+='<div class="pdh"><h1>Cota de Consórcio · Montar e Vender</h1>'+
+     '<div class="sub">Simulação de aquisição de cota, contemplação por lance embutido e venda com ágio</div>'+
+     '<div class="dt">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div></div>';
+  h+=sec('Premissas utilizadas','<div class="pdg">'+
+      item('Crédito da carta','R$ '+v('kCred'))+
+      item('Contemplação estimada','mês '+v('kMc'))+
+      item('Ágio considerado',v('kAgio')+'%')+
+      item('Lance embutido',v('kLan')+'%')+
+      item('Redutor da parcela',v('kRed')+'%')+
+      item('Prazo',v('kPz')+' meses')+
+     '</div>');
+  h+=sec('Quem monta e vende a cota','<div class="pdg">'+
+      item('Investido em parcelas',pv('kv1'),pv('kv1b'))+
+      item('Recebido de ágio',pv('kv2'))+
+      item('Resultado',pv('kv3'),pv('kv3b'),1)+
+     '</div>'+
+     '<div class="pdg d2" style="margin-top:10px">'+
+      item('Retorno equivalente ao mês',pv('kHm'))+
+      item('Retorno equivalente ao ano',pv('kHa'))+
+     '</div>');
+  h+=sec('Quem compra a cota','<div class="pdg">'+
+      item('Paga de ágio, à vista',pv('kc1'))+
+      item('Recebe de crédito',pv('kc2'),pv('kc2b'))+
+      item('Custo do crédito',pv('kc3'),pv('kc3b'),1)+
+     '</div>');
+  h+=sec('Sensibilidade ao mês da contemplação',
+     '<table class="pdtab"><thead><tr><th>Mês</th><th>Investido</th><th>Ágio</th><th>Resultado</th><th>Ao mês</th><th>Custo do comprador</th></tr></thead>'+
+     '<tbody>'+document.querySelector('#kTabela tbody').innerHTML.replace(/class="[^"]*"/g,'')+'</tbody></table>'+
+     '<div style="margin-top:9px">'+
+      linha('Ágio mínimo para não haver prejuízo',pv('kw1'))+
+      linha('Mês a partir do qual a operação fica negativa',pv('kw2'))+
+     '</div>');
+  h+=sec('Resumo da operação','<div class="pdrot">'+document.getElementById('kRot').innerHTML+'</div>');
+  h+='<div class="pdnota">'+NOTA+'</div>';
+  return h;
+}
+
+function pdfCotasComprar(){
+  var v=function(i){return document.getElementById(i).value};
+  var h='';
+  h+='<div class="pdh"><h1>Carta Contemplada · Análise de Compra</h1>'+
+     '<div class="sub">Simulação do custo de aquisição de carta contemplada no mercado secundário</div>'+
+     '<div class="dt">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div></div>';
+  h+=sec('A carta analisada','<div class="pdg">'+
+      item('Crédito','R$ '+v('cCred'))+
+      item('Entrada','R$ '+v('cEnt'))+
+      item('Parcelas restantes',v('cPz'))+
+      item('Valor da parcela','R$ '+v('cParc'))+
+      item('Taxa de transferência','R$ '+v('cTr'))+
+      item('Financiamento comparado',v('cFin').replace('.',',')+'% ao ano')+
+     '</div>');
+  h+=sec('O negócio','<div class="pdg">'+
+      item('Recebe de crédito',pv('cg1'))+
+      item('Paga de entrada e transferência',pv('cg2'))+
+      item('Assume em parcelas',pv('cg3'),pv('cg3b'))+
+     '</div>'+
+     '<div class="pdg d2" style="margin-top:10px">'+
+      item('Sobra no bolso hoje',pv('cHv'),'',1)+
+      item('Custo total da operação',pv('cg4'))+
+     '</div>');
+  h+=sec('Custo do crédito','<div class="pdg d2">'+
+      item('Custo pelo método linear',pv('cm1'),'custo total dividido pelo prazo')+
+      item('Custo real, taxa composta',pv('cm2'),'comparável a juros de financiamento',1)+
+     '</div>'+
+     '<div style="margin-top:9px">'+
+      linha('Diferença entre os dois métodos',pv('cm3'))+
+     '</div>'+
+     '<div style="margin-top:9px;font-size:11px;color:#555;line-height:1.55">O método linear divide o custo total pelo prazo e não considera que o saldo devedor diminui a cada parcela paga. Por isso ele resulta em um número menor e não é comparável com a taxa de um financiamento, que é composta. A comparação correta com financiamento deve usar a taxa composta.</div>');
+  h+=sec('Comparação com financiamento','<div class="pdg d2">'+
+      item('Parcela da carta',pv('cf1'),pv('cf1b'))+
+      item('Parcela do financiamento',pv('cf2'),pv('cf2b'))+
+      item('Diferença por mês',pv('cf3'),pv('cf3b'))+
+      item('Diferença no total',pv('cf4'),pv('cf4b'))+
+     '</div>');
+  h+='<div class="pdnota">'+NOTA+'</div>';
+  return h;
+}
+
+function gerarPDF(){
+  var d=document.getElementById('pdfDoc'), html='';
+  var emCotas=document.getElementById('tCotas').classList.contains('on');
+  if(!emCotas) html=pdfHolding();
+  else html=document.getElementById('kVend').classList.contains('on')?pdfCotasVender():pdfCotasComprar();
+  d.innerHTML=html;
+  setTimeout(function(){window.print()},60);
+}
+
 kCalc(); cCalc();
 
 </script>
