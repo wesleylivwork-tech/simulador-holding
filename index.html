@@ -14,6 +14,9 @@ header .s{color:#7d8699;font-size:14px;margin-top:3px}
 .ghost{background:none;border:1px solid #2a3450;color:#8b93a7;border-radius:9px;padding:9px 16px;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap}
 .ghost:hover{border-color:#e8b34b;color:#e8b34b}
 .grid{display:grid;grid-template-columns:310px 1fr;gap:20px;align-items:start}
+/* itens de grid nao encolhem abaixo do min-content por padrao: isso causava rolagem lateral na aba Cotas */
+.grid>*,.two>*,.three>*,.jr>*,.jr2>*,.acols>*,.tlg>*,.mkt>*,.rg>*{min-width:0}
+.panel,.mo,.tl,.lg,.rot{min-width:0}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
 .panel{background:#131824;border:1px solid #1e2536;border-radius:16px;padding:20px;position:sticky;top:20px}
 .panel h2{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5c6478;margin-bottom:14px}
@@ -436,15 +439,15 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
         <div class="tp"><div class="dot">2</div><div class="hd"><div class="tt">O imóvel entra na holding</div><div class="st">e o dinheiro sai pra você</div></div>
           <button class="plus" id="pl2" onclick="det(2)">+ info</button></div>
         <div class="det" id="dt2">
-          <div class="dr"><span class="a">Valor de venda</span><span class="b" id="x21">R$ 0</span></div>
+          <div class="dr"><span class="a" id="x21k">Valor de venda</span><span class="b" id="x21">R$ 0</span></div>
           <div class="dr"><span class="a">Quanto você pagou</span><span class="b" id="x22">R$ 0</span></div>
           <div class="dr"><span class="a">Ganho de capital</span><span class="b" id="x23">R$ 0</span></div>
           <div class="dr"><span class="a">Redutor por tempo de posse</span><span class="b" id="x23b">R$ 0</span></div>
           <div class="dr"><span class="a">Base que é tributada</span><span class="b" id="x23c">R$ 0</span></div>
           <div class="dr"><span class="a">Imposto de renda</span><span class="b" id="x24">R$ 0</span></div>
-          <div class="dr"><span class="a">ITBI</span><span class="b" id="x25">R$ 0</span></div>
+          <div class="dr"><span class="a" id="x25k">ITBI</span><span class="b" id="x25">R$ 0</span></div>
           <div class="dr"><span class="a">Cartório e registro</span><span class="b" id="x26">R$ 0</span></div>
-          <div class="dr acc"><span class="a">Limpo na sua mão</span><span class="b" id="x27">R$ 0</span></div>
+          <div class="dr acc"><span class="a" id="x27k">Limpo na sua mão</span><span class="b" id="x27">R$ 0</span></div>
           <div class="tx" id="x28"></div>
         </div>
         <div class="li"><div class="lk" id="b1k">A holding te paga</div><div class="lv" id="b1">R$ 0</div></div>
@@ -682,8 +685,8 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
           <div class="r"><span class="k">Parcela sem redutor</span><span class="v" id="d1">R$ 0</span></div>
           <div class="r"><span class="k">Parcela com redutor</span><span class="v g" id="d2">R$ 0</span></div>
           <div class="r hi"><span class="k">Sai da fase 1</span><span class="v" id="d3">R$ 0</span></div>
-          <div class="r"><span class="k">Diferença no total pago</span><span class="v" id="d4">R$ 0</span></div>
-          <div class="note">O redutor não é desconto, o total pago é o mesmo. Ele tira dinheiro da fase 1, onde não existe receita, e devolve na fase 2, quando o rendimento já entrou.</div>
+          <div class="r"><span class="k">Custa a mais no total, com reajuste</span><span class="v" id="d4">R$ 0</span></div>
+          <div class="note" id="d4n"></div>
         </div>
       </div>
       <div class="wr">
@@ -1030,12 +1033,14 @@ function calc(){
   var V=nm('vImov'); if(V<=0)V=1;
   var custo=Math.min(Math.max(nm('vCusto'),0),V);
   var tx=n('vTx')/100, red=n('vRed')/100, idx=n('vIdx')/100;
-  var pz=Math.max(Math.round(n('vPz')),2), mc=Math.round(n('vMc'));
+  var pz=Math.min(Math.max(Math.round(n('vPz')),2),600), mc=Math.round(n('vMc'));
+  if(Math.round(n('vPz'))!==pz)document.getElementById('vPz').value=pz;
   if(mc<1)mc=1; if(mc>=pz)mc=pz-1;
   if(Math.round(n('vMc'))!==mc)document.getElementById('vMc').value=mc;
   var adm=n('vAdm')/100,fr=n('vFr')/100,pe=n('vEmb')/100,pl=n('vLan')/100;
   var ITBI=n('vItbi')/100,CART=n('vCart')/100,IRR=n('vIrr')/100;
   var mes=Math.min(Math.max(Math.round(n('vMes')),1),pz);
+  if(Math.round(n('vMes'))!==mes)document.getElementById('vMes').value=mes;
 
   document.getElementById('hPct').textContent='Hoje: '+pc(custo/V*100,0)+' do valor.';
   document.getElementById('hBase').textContent=base==='cre'
@@ -1249,10 +1254,23 @@ function calc(){
   document.getElementById('x23b').textContent='- '+m(ganho-baseTrib);
   document.getElementById('x23c').textContent=m(baseTrib);
   document.getElementById('x24').textContent='- '+m(ir);
-  document.getElementById('x25').textContent='- '+m(V*ITBI);
-  document.getElementById('x26').textContent='- '+m(V*CART);
+  document.getElementById('x25').textContent='- '+m(itbi);
+  document.getElementById('x26').textContent='- '+m(cart);
   document.getElementById('x27').textContent=m(liq);
-  document.getElementById('x28').textContent='O imposto incide só sobre o ganho, não sobre o valor total. Como o imóvel foi comprado em '+Math.round(n('vAno'))+', a lei permite reduzir a base em '+pc((1-RD.fator)*100,0)+' pelo tempo de posse, o que economiza '+m(irSem-ir)+'. Depois disso a alíquota é progressiva por faixa'+(baseTrib>0?', e a efetiva aqui ficou em '+pc(ir/baseTrib*100):'')+'. Como é compra e venda, e não integralização, o ITBI é devido normalmente.';
+  document.getElementById('x21k').textContent = integra ? 'Valor dos imóveis' : 'Valor de venda';
+  document.getElementById('x25k').textContent = (integra && !FAT && excedente>0) ? 'ITBI sobre o excedente' : 'ITBI';
+  document.getElementById('x27k').textContent = integra ? 'Entra na sua mão' : 'Limpo na sua mão';
+  document.getElementById('x28').textContent = integra
+    ? ((aCusto
+        ? 'Integralizando pelo valor da declaração não há ganho de capital a apurar, então não entra imposto de renda aqui. '
+        : 'Integralizando a valor de mercado o ganho de capital é apurado agora, e a base já vem com o redutor de '+pc((1-RD.fator)*100,0)+' por tempo de posse. ')
+      + (FAT
+        ? 'Como a holding vai ter receita de aluguel, a preponderância derruba a imunidade e o ITBI é devido cheio.'
+        : (excedente>0
+          ? 'O ITBI aqui não é cheio: a imunidade cobre o capital integralizado e a cobrança recai só sobre os '+m(excedente)+' que excedem, pelo Tema 796 do STF.'
+          : 'Sem receita imobiliária e sem excedente sobre o capital, não há ITBI a pagar.'))
+      + ' Não há venda, então nenhum dinheiro entra para o dono nesta rota.')
+    : ('O imposto incide só sobre o ganho, não sobre o valor total. Como o imóvel foi comprado em '+Math.round(n('vAno'))+', a lei permite reduzir a base em '+pc((1-RD.fator)*100,0)+' pelo tempo de posse, o que economiza '+m(irSem-ir)+'. Depois disso a alíquota é progressiva por faixa'+(baseTrib>0?', e a efetiva aqui ficou em '+pc(ir/baseTrib*100):'')+'. Como é compra e venda, e não integralização, o ITBI é devido normalmente.');
   var bruto=liq*tx;
   document.getElementById('x31').textContent=m(liq);
   document.getElementById('x32').textContent=m(bruto);
@@ -1285,7 +1303,15 @@ function calc(){
   document.getElementById('d1').textContent=m2(SR.pr*u);
   document.getElementById('d2').textContent=m2(E.pr*u);
   document.getElementById('d3').textContent=m(SR.fase1-E.fase1);
-  document.getElementById('d4').textContent=m(E.tot-SR.tot);
+  /* o total pago com reajuste: diferir sob INCC nao e neutro, custa */
+  function totReaj(X){var s=0;for(var t=1;t<=pz;t++){s+=(t<=mc?X.pr:X.nova)*Math.pow(1+idx,nre(t))}return s+X.prop}
+  var difReaj=totReaj(E)-totReaj(SR);
+  var d4=document.getElementById('d4');
+  d4.textContent=(difReaj>0?'+ ':'')+m(difReaj);
+  d4.className='v'+(difReaj>1?' rd':'');
+  document.getElementById('d4n').innerHTML = idx<=0
+    ? 'Sem reajuste o redutor é exatamente neutro: o total pago é o mesmo. Ele só tira dinheiro da fase 1, onde não existe receita, e devolve na fase 2, quando o rendimento já entrou.'
+    : 'O redutor <b>não é desconto, é adiamento</b>. Numa conta sem reajuste ele seria neutro. Como a parcela é corrigida pelo INCC, o que foi empurrado para a frente chega já corrigido, e isso custa <b>'+m(difReaj)+'</b> a mais no total, ou '+pc(difReaj/Math.max(totReaj(SR),1)*100,1)+'. Em troca, tira <b>'+m(SR.fase1-E.fase1)+'</b> da fase 1, que é justamente onde não existe receita nenhuma. É trocar custo por fôlego de caixa, não almoço grátis.';
 
   document.getElementById('lgRed').innerHTML='os imóveis foram comprados em '+Math.round(n('vAno'))+
     ', então na venda o redutor corta <b>'+pc((1-RD.fator)*100,0)+'</b> do lucro tributável. O imposto cai de '+
@@ -1363,7 +1389,8 @@ function tir(f){
 
 /* ================= VENDER ================= */
 function kEng(mc){
-  var C0=knm('kCred'), PZ=Math.max(Math.round(kn('kPz')),2);
+  var C0=knm('kCred'), PZ=Math.min(Math.max(Math.round(kn('kPz')),2),600);
+  if(Math.round(kn('kPz'))!==PZ)document.getElementById('kPz').value=PZ;
   var TXA=kn('kTxa')/100, INCC=kn('kIncc')/100, LAN=kn('kLan')/100;
   var AG=kn('kAgio')/100, RED=kn('kRed')/100;
   if(mc<1)mc=1; if(mc>=PZ)mc=PZ-1;
@@ -1473,7 +1500,8 @@ function kCalc(){
 var MKT={"data":"29/07/2026","n":218,"adms":[{"nome":"Bradesco","n":54,"cred":129575,"ent":49.5,"pz":152,"tir":16.4,"simples":4.8},{"nome":"Porto Seguro","n":44,"cred":107500,"ent":49.4,"pz":177,"tir":14,"simples":4.3},{"nome":"Mycon","n":28,"cred":88390,"ent":51.8,"pz":150,"tir":17.2,"simples":4.7},{"nome":"Itaú","n":27,"cred":169240,"ent":51.4,"pz":133,"tir":17.5,"simples":5.1},{"nome":"Santander","n":24,"cred":208600,"ent":49,"pz":182,"tir":12.7,"simples":3.7},{"nome":"CNP","n":16,"cred":226750,"ent":37.3,"pz":100,"tir":23.6,"simples":8.5},{"nome":"Rodobens","n":14,"cred":111168,"ent":47.3,"pz":182,"tir":14,"simples":4.4},{"nome":"Yamaha","n":8,"cred":152500,"ent":49.2,"pz":211,"tir":12.1,"simples":3.6}],"tir":{"min":6,"p25":13.7,"mediana":15.7,"p75":17.8,"max":110.6},"bandas":[{"rot":"abaixo de 10%","n":9},{"rot":"10% a 15%","n":79},{"rot":"15% a 20%","n":97},{"rot":"20% a 30%","n":25},{"rot":"acima de 30%","n":8}],"entrada":{"min":27.6,"mediana":49.5,"max":62.2},"prazoMed":160,"gap":11.1};
 
 function cCalc(){
-  var cred=knm('cCred'), ent=knm('cEnt'), pz=Math.max(Math.round(kn('cPz')),1);
+  var cred=knm('cCred'), ent=knm('cEnt'), pz=Math.min(Math.max(Math.round(kn('cPz')),1),600);
+  if(Math.round(kn('cPz'))!==pz)document.getElementById('cPz').value=pz;
   var parc=knm('cParc'), tr=knm('cTr'), fin=kn('cFin')/100;
   var sd=pz*parc, custo=ent+tr+sd-cred, liq=cred-ent-tr;
   var simples=cred>0?((ent+sd-cred)/cred)/pz*12:0;
