@@ -22,6 +22,15 @@ header .s{color:#7d8699;font-size:14px;margin-top:3px}
 .panel h2{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5c6478;margin-bottom:14px}
 label{display:block;font-size:12px;color:#8b93a7;margin-bottom:5px}
 .f{margin-bottom:14px}
+select{width:100%;background:#0b0e14;border:1px solid #263049;color:#e6e9f0;border-radius:9px;
+  padding:11px 12px;font-size:14px;font-family:inherit;cursor:pointer;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,#8b93a7 50%),linear-gradient(135deg,#8b93a7 50%,transparent 50%);
+  background-position:calc(100% - 17px) calc(50% + 1px),calc(100% - 12px) calc(50% + 1px);
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+select:focus{outline:none;border-color:#e8b34b}
+select optgroup{background:#0b0e14;color:#6f7789;font-style:normal;font-size:11px}
+select option{background:#0b0e14;color:#e6e9f0;font-size:14px}
+.ckw{display:inline-block;background:#3a2a12;color:#e8b34b;border-radius:4px;padding:1px 5px;font-size:9.5px;font-weight:700;margin-left:5px;vertical-align:middle}
 input{width:100%;background:#0b0e14;border:1px solid #263049;color:#e6e9f0;border-radius:9px;padding:11px 12px;font-size:15px;font-family:inherit;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
 input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
@@ -372,6 +381,11 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
       </div>
       <div class="hint" id="hDoa"></div>
     </div>
+    <div class="f" id="boxEst" style="display:none">
+      <label>Estado onde o doador mora <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="est">i</span></label>
+      <select id="selEst" onchange="setEst(this.value)"></select>
+      <div class="hint" id="hEst"></div>
+    </div>
 
     <div class="two">
       <div class="f"><label>Rende (% ao mês)</label><input type="number" id="vTx" value="1" step="0.05"></div>
@@ -538,11 +552,11 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 
     <div class="tl" id="cardSuc" style="display:none">
       <div class="th">
-        <div><div class="tt">Sucessão: o ITCMD das quotas</div><div class="st">São Paulo cobra 4% fixo hoje, e há duas mudanças a caminho</div></div>
+        <div><div class="tt">Sucessão: o ITCMD das quotas</div><div class="st" id="sucST"></div></div>
       </div>
       <div class="tlg">
         <div class="tc"><div class="k">Base de cálculo</div><div class="v bl" id="u1">R$ 0</div><div class="s" id="u1b"></div></div>
-        <div class="tc"><div class="k">Alíquota</div><div class="v" id="u2">4% fixo</div><div class="s">Lei 10.705/2000, art. 16</div></div>
+        <div class="tc"><div class="k">Alíquota efetiva</div><div class="v" id="u2">4%</div><div class="s" id="u2b"></div></div>
         <div class="tc"><div class="k" id="u3k">Paga na doação</div><div class="v rd" id="u3">R$ 0</div><div class="s" id="u3b"></div></div>
         <div class="tc"><div class="k" id="u4k">O que a janela vale</div><div class="v g" id="u4">R$ 0</div><div class="s" id="u4b"></div></div>
       </div>
@@ -642,6 +656,18 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
             <p><b>Por que interessa aqui:</b> a holding fica com a dívida do consórcio e sem receita nenhuma. Colocar os imóveis para alugar resolve isso, gera caixa dentro da própria empresa e ainda aproveita a janela. É a saída mais limpa para o descasamento entre a pessoa física e a holding.</p>
             <p><b>Prazo que já começou:</b> desde 1º de agosto de 2026 valem as obrigações acessórias, incluindo emissão de nota fiscal de serviço no aluguel.</p>
             <p class="ref"><b>A regra:</b> LC 214/2025, arts. 255 a 260, regime específico de bens imóveis: redução de 70% nas alíquotas de IBS e CBS na locação, regime de caixa e redutor social de até R$ 600 por mês por unidade residencial. Art. 487 traz opção de transição a 3,65% até 2028, sem direito a crédito nem ao redutor. Pessoa física vira contribuinte se tiver receita acima do limite e mais de três imóveis alugados, requisitos cumulativos (Decreto 12.955/2026, art. 382).</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag ok">o ganho que quase ninguém mostra</span><span class="q">A holding muda qual estado cobra o imposto de doação</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> a Constituição divide o ITCMD por tipo de bem. <b>Imóvel paga no estado onde o imóvel está.</b> <b>Bem móvel paga no estado onde o doador mora.</b> E quota de sociedade é bem móvel, o Código Civil diz isso no artigo 83.</p>
+            <p><b>A consequência:</b> quando os imóveis já estão dentro da holding e o que se doa são as quotas, o imposto inteiro vai para o estado onde o doador mora, <b>não importa onde os imóveis estejam</b>.</p>
+            <p><b>Um exemplo que fecha reunião:</b> cliente mora em São Paulo, tem imóveis em três estados. Doando os imóveis direto, paga a alíquota de cada estado, e vários chegam a 8%. Doando as quotas da holding, paga 4% em São Paulo sobre tudo. Numa base de R$ 8,5 milhões, a diferença entre o estado mais caro e o mais barato do país passa de <b>meio milhão de reais</b>.</p>
+            <p><b>Dois cuidados.</b> Alguns estados, Minas Gerais em especial, já tentaram cobrar pela localização do imóvel dentro da holding. É contestado como inconstitucional, mas gera briga. E o domicílio precisa ser <b>real</b>: mudar endereço no papel às vésperas da doação é simulação, e o fisco desfaz.</p>
+            <p><b>Com o ITBI não existe essa escolha.</b> Ele é municipal e incide sempre no município onde o imóvel está.</p>
+            <p class="ref"><b>A regra:</b> CF art. 155, §1º, I e II, com a redação da EC 132/2023. Código Civil art. 83, III, que classifica direitos pessoais de caráter patrimonial, incluindo quotas, como bens móveis.</p>
           </div>
         </div>
 
@@ -1002,7 +1028,18 @@ var TT={
     '<b>Doação cheia</b> é passar a propriedade inteira e pagar tudo de uma vez.<br><br>'+
     '<b>Com usufruto</b>, o pai doa a nua-propriedade e guarda para si o direito de continuar recebendo a renda e mandando nas decisões. São Paulo deixa pagar <b>2/3 agora</b> e o outro terço só quando a propriedade se consolidar. <b>Atenção: isso não reduz o imposto, apenas adia um terço dele.</b> O ganho está no controle e no caixa, não no total pago.<br><br>'+
     '<b>Duas mudanças vêm por aí, e as duas encarecem.</b> A reforma obriga São Paulo a adotar faixas progressivas com teto de 8%, e há projeto na Assembleia propondo 2% a 8%. E a LC 227/2026 mudou a base de cálculo das quotas de empresa fechada: sai o valor contábil e entra o <b>patrimônio líquido ajustado a valor de mercado</b>, mais fundo de comércio. As duas dependem de lei estadual e de anterioridade, o que na prática joga para 2027.',
-  r:'Lei estadual SP 10.705/2000, arts. 9º, 16 e 31. LC 227/2026, art. 154, II. PL 7/2024 e PL 409/2025, em tramitação na Alesp.'}
+  r:'Lei estadual SP 10.705/2000, arts. 9º, 16 e 31. LC 227/2026, art. 154, II. PL 7/2024 e PL 409/2025, em tramitação na Alesp.'},
+
+ est:{t:'Qual estado cobra, e por que a holding muda a resposta',
+  b:'Essa é uma das coisas mais mal compreendidas do planejamento sucessório, e é onde a holding entrega um ganho que quase ninguém mostra.<br><br>'+
+    'A Constituição divide a competência do ITCMD por <b>tipo de bem</b>:<br><br>'+
+    '<b>Imóvel</b> paga no estado <b>onde o imóvel está</b>. Se o cliente mora em São Paulo e tem uma fazenda em Mato Grosso, ao doar a fazenda direto o imposto é de Mato Grosso.<br><br>'+
+    '<b>Bem móvel, título e crédito</b> paga no estado <b>onde o doador mora</b>.<br><br>'+
+    '<b>E aqui está o ponto: quota de sociedade é bem móvel.</b> O Código Civil diz isso no artigo 83. Então, quando os imóveis já estão dentro da holding e o que se doa são as <b>quotas</b>, o ITCMD inteiro vai para o estado de domicílio do doador, <b>não importa onde os imóveis estejam</b>.<br><br>'+
+    'Na prática: cliente que mora em São Paulo, com imóveis espalhados por três estados, doando quotas paga <b>4% em São Paulo sobre tudo</b>. Doando os imóveis direto, pagaria a alíquota de cada estado, e vários chegam a 8%.<br><br>'+
+    '<b>Cuidado com dois pontos.</b> Primeiro, alguns estados, Minas Gerais em especial, já tentaram cobrar pela localização do imóvel dentro da holding. Isso é contestado como inconstitucional, mas gera briga. Segundo, o domicílio precisa ser <b>real</b>: mudar o endereço no papel às vésperas da doação é simulação, e o fisco desfaz.<br><br>'+
+    '<b>O ITBI é outra história.</b> Ele é municipal e incide sempre no <b>município onde o imóvel está</b>, sem exceção e sem escolha. Por isso o campo de ITBI da calculadora fica separado, em ajustes avançados: você ajusta conforme a prefeitura de cada imóvel.',
+  r:'Constituição, art. 155, §1º, I (imóveis) e II (bens móveis, títulos e créditos), com a redação da EC 132/2023. Código Civil, art. 83, III. Alíquotas levantadas em agosto de 2026; as marcadas com aviso não puderam ser confirmadas em documento oficial.'}
 };
 var ttAtual=null;
 function ttc(){var e=document.getElementById('tt');e.className='';
@@ -1125,12 +1162,66 @@ function setDoa(d){DOA=d;
   document.getElementById('dC').className=(d==='cheia'?'on':'');
   document.getElementById('dU').className=(d==='usuf'?'on':'');calc()}
 
-/* ITCMD-SP: 4% FIXO, Lei estadual 10.705/2000 art.16. Sao Paulo NAO tem progressividade em vigor.
-   Verificado em ago/2026 na Sefaz-SP. Tramitam o PL 7/2024 (2% a 8%) e o PL 409/2025 (1% a 4%),
-   nenhum aprovado. Se aprovado em 2026, so vale em 2027 pela anterioridade. */
-var ITCMD_SP=0.04;
-var UFESP=37.60, ISENTO=2500*UFESP;   /* doacao ate 2.500 UFESPs e isenta */
-function itcmd(v){ return v>ISENTO ? v*ITCMD_SP : 0 }
+/* ================= ITCMD POR ESTADO =================
+   Aliquotas de DOACAO em vigor em agosto/2026. Quotas de holding sao BEM MOVEL (CC art.83, III),
+   entao a competencia e do estado do DOMICILIO DO DOADOR (CF art.155, §1º, II), e nao do estado
+   onde estao os imoveis. Levantamento de ago/2026.
+   f  = faixas progressivas em R$, [[limite, aliquota], ...]
+   a  = aliquota unica
+   ix = faixas indexadas em unidade fiscal local nao convertida; usamos o topo da tabela,
+        que e onde patrimonio de holding costuma cair de qualquer forma.
+   ck = true quando a fonte nao pode ser confirmada em documento oficial e precisa de conferencia. */
+var UF={
+ SP:{n:'São Paulo',           a:.04,                              l:'Lei 10.705/2000, art. 16', o:'Alíquota única. Não é progressivo, apesar do que muito material diz. Há dois projetos na Alesp em direções opostas: 2% a 8% e 1% a 4%.'},
+ MG:{n:'Minas Gerais',        a:.05,                              l:'Lei 14.941/2003, art. 10', o:'Alíquota única. O PL 2.881/24 propõe progressividade de 2% a 8%, ainda não aprovado.'},
+ ES:{n:'Espírito Santo',      a:.04,                              l:'Lei 10.011/2013, art. 12', o:'Alíquota única.'},
+ PR:{n:'Paraná',              a:.04,                              l:'Lei 18.573/2016, art. 22', o:'Alíquota única. A progressividade chegou a ser proposta e foi retirada do texto final.'},
+ RR:{n:'Roraima',             a:.04,                              l:'Lei 59/1993, art. 79',     o:'Alíquota única.'},
+ AL:{n:'Alagoas',             a:.02,                              l:'Lei 5.077/1989',           o:'Doação paga 2%, causa mortis paga 4%. Ainda não editou lei de progressividade.'},
+ MS:{n:'Mato Grosso do Sul',  a:.03,                              l:'Lei 1.810/1997, art. 129', o:'Doação paga 3%, causa mortis paga 6%. Não é progressivo por faixa de valor.'},
+ PI:{n:'Piauí',               a:.04,                              l:'Lei 4.261/1989',           o:'Doação tem alíquota única de 4%. Só a causa mortis é progressiva, de 2% a 6%.'},
+ SE:{n:'Sergipe',             a:.02,                              l:'Lei 7.724/2013',           o:'Doação de bem móvel paga 2%, e quota de holding é bem móvel. Doação de imóvel direto seria progressiva de 2% a 8%. Nesse estado a holding faz muita diferença.'},
+ AP:{n:'Amapá',               a:.03, ck:1,                        l:'Decreto 3.601/2000',       o:'Regra antiga de 3% na doação. Há indício de uma Lei 3.149/2024 tornando progressiva de 2% a 4%, que não consegui confirmar. Confira antes de usar.'},
+
+ BA:{n:'Bahia',               f:[[200000,.03],[300000,.035],[Infinity,.04]],                    l:'Lei 4.826/1989, red. Lei 14.802/2024', o:'Progressivo na doação, de 3% a 4%. A causa mortis vai a 8%.'},
+ PE:{n:'Pernambuco',          f:[[80000,0],[350000,.02],[550000,.04],[750000,.06],[Infinity,.08]], l:'LC 563/2025', o:'Progressivo de 0% a 8% desde janeiro de 2026. O regime de transição com desconto acabou em março de 2026.'},
+ GO:{n:'Goiás',               f:[[25000,.02],[200000,.04],[600000,.06],[Infinity,.08]],         l:'Lei 19.021/2015', o:'Progressivo de 2% a 8%.'},
+ TO:{n:'Tocantins',           f:[[25000,0],[100000,.02],[500000,.04],[2000000,.06],[Infinity,.08]], l:'Lei 3.019/2015', o:'Progressivo de 2% a 8%, isento até R$ 25 mil.'},
+ AM:{n:'Amazonas',            f:[[2000000,.02],[6000000,.03],[Infinity,.04]],                   l:'LC 269/2024', o:'Progressivo de 2% a 4%, exigível desde março de 2025.'},
+ AC:{n:'Acre',                f:[[25000,.02],[100000,.04],[200000,.06],[Infinity,.08]],         l:'LC 373/2020, arts. 29 e 30', o:'Progressivo de 2% a 8% na doação.'},
+ SC:{n:'Santa Catarina',      f:[[20000,.01],[50000,.03],[150000,.05],[Infinity,.07]],          l:'Lei 13.136/2004, art. 9º', o:'Progressivo de 1% a 7%. A faixa de 8% foi revogada em 2024 depois de decisão do TJ-SC.'},
+ MA:{n:'Maranhão',            f:[[100000,.01],[300000,.015],[Infinity,.02]],                    l:'Lei 7.799/2002', o:'Progressivo na doação, de 1% a 2%. É a menor carga de doação do país. A causa mortis vai a 7%.'},
+ RN:{n:'Rio Grande do Norte', f:[[500000,.03],[1000000,.04],[3000000,.05],[Infinity,.06]], ck:1, l:'Lei 5.887/1989, red. Lei 9.993/2015', o:'Progressivo de 3% a 6% pelo texto da lei, mas várias bases ainda listam o estado como alíquota fixa. Confira antes de usar.'},
+ PB:{n:'Paraíba',             f:[[125000,.02],[1000000,.04],[2000000,.06],[Infinity,.08]], ck:1, l:'Lei 5.123/1989 com alterações', o:'Progressivo de 2% a 8%. Os percentuais estão confirmados, mas não consegui validar o número da lei que instituiu a progressividade. Confira antes de usar.'},
+ DF:{n:'Distrito Federal',    f:[[1600000,.04],[3300000,.05],[Infinity,.06]], ck:1,             l:'Lei Distrital 3.804/2006, art. 9º', o:'Progressivo de 4% a 6%. As faixas são corrigidas todo ano e os limites aqui são aproximados. Confira antes de usar.'},
+
+ RJ:{n:'Rio de Janeiro',      ix:.08, mn:.04,                     l:'Lei 7.786/2017', o:'Progressivo de 4% a 8%, com faixas em UFIR-RJ que mudam todo ano. Patrimônio de holding cai no topo da tabela, então usamos 8%.'},
+ CE:{n:'Ceará',               ix:.08, mn:.02,                     l:'Lei 15.812/2015', o:'Progressivo de 2% a 8%, com faixas em UFIRCE. Usamos o topo da tabela.'},
+ MT:{n:'Mato Grosso',         ix:.08, mn:.02,                     l:'Lei 7.850/2002, art. 19', o:'Progressivo de 2% a 8% na doação, com faixas em UPF-MT. Usamos o topo da tabela.'},
+ RS:{n:'Rio Grande do Sul',   ix:.04, mn:.03,                     l:'Lei 8.821/1989, arts. 18 e 19', o:'Doação paga 3% até 10 mil UPF-RS e 4% acima. Usamos 4%. A causa mortis é progressiva até 6%.'},
+ PA:{n:'Pará',                ix:.04, mn:.02,                     l:'Lei 5.529/1989, red. Lei 8.868/2019', o:'Doação progressiva de 2% a 4%, com faixas em UPF-PA. Usamos o topo.'},
+ RO:{n:'Rondônia',            ix:.04, mn:.02, ck:1,               l:'Lei 959/2000', o:'Progressivo de 2% a 4%, faixas em UPF-RO. Não confirmei em fonte oficial. Confira antes de usar.'}
+};
+var EST='SP';
+var UFESP=37.60, ISENTO=2500*UFESP;   /* isencao de SP: 2.500 UFESPs */
+
+/* aliquota efetiva media sobre a base, no estado escolhido */
+function itcmd(v){
+  var u=UF[EST]||UF.SP;
+  if(v<=0) return 0;
+  if(u.a!==undefined){ return (EST==='SP' && v<=ISENTO) ? 0 : v*u.a }
+  if(u.ix!==undefined) return v*u.ix;
+  var imp=0, ant=0;
+  for(var i=0;i<u.f.length;i++){
+    if(v>ant){ imp+=(Math.min(v,u.f[i][0])-ant)*u.f[i][1]; ant=u.f[i][0] } else break;
+  }
+  return imp;
+}
+function itcmdTopo(){var u=UF[EST]||UF.SP;
+  if(u.a!==undefined)return u.a;
+  if(u.ix!==undefined)return u.ix;
+  return u.f[u.f.length-1][1]}
+function setEst(e){EST=e;calc()}
 
 function calc(){
   var V=nm('vImov'); if(V<=0)V=1;
@@ -1268,7 +1359,9 @@ function calc(){
 
   /* ---- card de sucessao ---- */
   var cs=document.getElementById('cardSuc');
-  if(DOA==='nao'){ cs.style.display='none'; }
+  document.getElementById('boxEst').style.display = (DOA==='nao'?'none':'block');
+  var uf=UF[EST]||UF.SP;
+  if(DOA==='nao'){ cs.style.display='none'; document.getElementById('hEst').textContent=''; }
   else{
     cs.style.display='block';
     var baseQ = integra ? conferido : V;   /* valor patrimonial das quotas hoje */
@@ -1276,9 +1369,17 @@ function calc(){
     var agora = DOA==='usuf' ? impT*(2/3) : impT;
     var dif   = DOA==='usuf' ? impT*(1/3) : 0;
     var alt   = itcmd(V);                  /* como fica quando a base virar valor de mercado */
+    var efet  = baseQ>0 ? impT/baseQ : 0;
+    var prog  = (uf.f!==undefined || uf.ix!==undefined);
+    document.getElementById('sucST').innerHTML = uf.n+' cobra '+
+      (uf.a!==undefined ? '<b>'+pc(uf.a*100,0)+' fixo</b>'
+       : uf.ix!==undefined ? '<b>'+pc(uf.mn*100,0)+' a '+pc(uf.ix*100,0)+'</b>, faixas em unidade fiscal local'
+       : '<b>'+pc(uf.f[0][1]*100,0)+' a '+pc(uf.f[uf.f.length-1][1]*100,0)+'</b> por faixa')+
+      ' na doação'+(uf.ck?'<span class="ckw">confira</span>':'');
     document.getElementById('u1').textContent=m(baseQ);
     document.getElementById('u1b').textContent = (integra&&aCusto) ? 'valor integralizado, não o de mercado' : 'valor de mercado';
-    document.getElementById('u2').textContent = pc(ITCMD_SP*100,0)+' fixo';
+    document.getElementById('u2').textContent = pc(efet*100,efet*100<10?2:1);
+    document.getElementById('u2b').textContent = uf.l;
     document.getElementById('u3k').textContent = DOA==='usuf' ? 'Paga agora, 2/3' : 'ITCMD na doação';
     document.getElementById('u3').textContent=m(agora);
     document.getElementById('u3b').textContent = DOA==='usuf' ? 'mais '+m(dif)+' quando consolidar' : 'de uma vez';
@@ -1286,12 +1387,21 @@ function calc(){
     document.getElementById('u4').textContent=m(eco);
     document.getElementById('u4k').textContent = eco>0 ? 'O que a janela vale' : 'Exposição à mudança';
     document.getElementById('u4b').textContent = eco>0 ? 'se a base virar valor de mercado' : 'a base já é o valor de mercado';
+    /* comparacao com o pior e o melhor estado, o argumento da competencia */
+    var caro=null,barato=null;
+    for(var k in UF){var e0=EST; EST=k; var x=itcmd(baseQ); EST=e0;
+      if(caro===null||x>caro.v)caro={k:k,v:x}; if(barato===null||x<barato.v)barato={k:k,v:x}}
     var sn='';
     if(integra&&aCusto) sn='As quotas valem hoje <b>'+m(conferido)+'</b> no patrimônio da empresa, e é sobre esse valor que o ITCMD incide, não sobre os '+m(V)+' de mercado. Isso não é subdeclarar: o artigo 23 da Lei 9.249/95 dá expressamente a escolha entre o valor da declaração e o de mercado.';
     else sn='A base é o valor de mercado das quotas. Integralizando pelo custo histórico a base cairia para '+m(custo)+' e o imposto para '+m(itcmd(custo))+'.';
-    if(DOA==='usuf') sn+=' Com reserva de usufruto, São Paulo deixa pagar 2/3 na doação e adiar 1/3 para quando a propriedade se consolidar, corrigido pela UFESP. <b>O usufruto não reduz o imposto total, ele difere um terço</b> e mantém o doador no controle e recebendo a renda.';
-    sn+=' <b>Duas mudanças estão a caminho e as duas pesam contra esperar.</b> A alíquota de São Paulo é <b>'+pc(ITCMD_SP*100,0)+' fixa</b> hoje, mas a reforma obriga o estado a adotar faixas progressivas com teto de 8%, e há projeto na Assembleia propondo justamente 2% a 8%. E a LC 227/2026 mudou a base de cálculo das quotas de empresa fechada para o patrimônio líquido <b>ajustado a valor de mercado</b>, mais fundo de comércio, o que sozinho levaria a base de '+m(baseQ)+' para perto de '+m(V)+(eco>0?', um aumento de <b>'+m(eco)+'</b> de imposto':'')+'. As duas dependem de lei estadual e de anterioridade, então na prática valem a partir de 2027.';
+    sn+=' <b>Quem cobra é '+uf.n+'</b>, porque quota de sociedade é bem móvel e o ITCMD de bem móvel cabe ao estado onde o <b>doador mora</b>, não onde os imóveis estão. '+uf.o;
+    if(caro && caro.v>impT+1) sn+=' Para comparar: essa mesma doação custaria <b>'+m(caro.v)+'</b> em '+UF[caro.k].n+' e <b>'+m(barato.v)+'</b> em '+UF[barato.k].n+'.';
+    if(uf.ck) sn+=' <b>Atenção:</b> a alíquota deste estado não pôde ser confirmada em documento oficial no levantamento. Confirme com o contador antes de usar em proposta.';
+    if(DOA==='usuf') sn+=' Com reserva de usufruto, São Paulo deixa pagar 2/3 na doação e adiar 1/3 para quando a propriedade se consolidar. <b>O usufruto não reduz o imposto total, ele difere um terço</b> e mantém o doador no controle e recebendo a renda. Fora de São Paulo essa regra muda, então confirme no estado do doador.';
+    sn+=' <b>Duas mudanças estão a caminho e as duas pesam contra esperar.</b> A reforma obriga todos os estados a adotarem faixas progressivas com teto de 8%'+(prog?', e este já é progressivo':', e este ainda é de alíquota única')+'. E a LC 227/2026 mudou a base de cálculo das quotas de empresa fechada para o patrimônio líquido <b>ajustado a valor de mercado</b>, mais fundo de comércio, o que sozinho levaria a base de '+m(baseQ)+' para perto de '+m(V)+(eco>0?', um aumento de <b>'+m(eco)+'</b> de imposto':'')+'. As duas dependem de lei estadual e de anterioridade, então na prática valem a partir de 2027.';
     document.getElementById('sucN').innerHTML=sn;
+    document.getElementById('hEst').innerHTML = 'Quota de holding é bem móvel, então quem cobra é o estado do doador, não o do imóvel. '+
+      (uf.a!==undefined?pc(uf.a*100,0)+' fixo':'efetiva de '+pc(efet*100,2)+' nesta base')+', '+uf.l+'.';
   }
 
   /* ---- os quadrantes do consorcio so fazem sentido na compra ---- */
@@ -1457,6 +1567,22 @@ IDS.forEach(function(i){var el=document.getElementById(i);
   if(MASK.indexOf(i)>=0)el.addEventListener('input',function(){mask(this);calc()});
   else el.addEventListener('input',calc)});
 document.getElementById('stamp').textContent='Atualizado em '+new Date().toLocaleDateString('pt-BR');
+
+/* monta a lista de estados, os mais usados primeiro */
+(function(){
+  var sel=document.getElementById('selEst');
+  var topo=['SP','MG','PR','SC','RJ','ES'];
+  var resto=Object.keys(UF).filter(function(k){return topo.indexOf(k)<0})
+              .sort(function(a,b){return UF[a].n.localeCompare(UF[b].n,'pt-BR')});
+  function opt(k){var o=document.createElement('option');o.value=k;
+    o.textContent=UF[k].n+' ('+k+')'+(UF[k].ck?'  ⚠':'');return o}
+  var g1=document.createElement('optgroup'); g1.label='Mais usados';
+  topo.forEach(function(k){g1.appendChild(opt(k))}); sel.appendChild(g1);
+  var g2=document.createElement('optgroup'); g2.label='Demais estados';
+  resto.forEach(function(k){g2.appendChild(opt(k))}); sel.appendChild(g2);
+  sel.value='SP';
+})();
+
 calc();
 
 /* ================= ABAS ================= */
@@ -1765,8 +1891,9 @@ function pdfHolding(){
       document.getElementById('tribN').innerHTML.replace(/<b>/g,'').replace(/<\/b>/g,'')+'</div>');
   if(DOA!=='nao'){
     h+=sec('Sucessão: ITCMD sobre as quotas','<div class="pdg">'+
+      item('Estado do doador',(UF[EST]||UF.SP).n)+
       item('Base de cálculo',pv('u1'),pv('u1b'))+
-      item('Alíquota efetiva',pv('u2'))+
+      item('Alíquota efetiva',pv('u2'),pv('u2b'))+
       item(pv('u3k'),pv('u3'),pv('u3b'),1)+
      '</div>'+
      '<div style="margin-top:9px;font-size:10.5px;color:#555;line-height:1.55">'+
