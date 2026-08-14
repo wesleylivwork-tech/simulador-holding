@@ -326,6 +326,7 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 <div class="tabs">
   <button id="tbH" class="on" onclick="tab('hold')">Holding</button>
   <button id="tbC" onclick="tab('cotas')">Cotas</button>
+  <button id="tbE" onclick="tab('esc')">Case real</button>
 </div>
 
 <div id="tHold" class="tabpane on">
@@ -999,6 +1000,267 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 </div>
 
 
+<div id="tEsc" class="tabpane">
+<div class="grid">
+  <div class="panel">
+    <h2>Simulação</h2>
+    <div class="f main">
+      <label>Valor de mercado dos imóveis</label>
+      <input type="text" inputmode="numeric" id="zImov" value="10.278.371">
+      <div class="steps">
+        <button onclick="zStep('zImov',-1000000)">−1M</button>
+        <button onclick="zStep('zImov',-500000)">−500k</button>
+        <button onclick="zStep('zImov',500000)">+500k</button>
+        <button onclick="zStep('zImov',1000000)">+1M</button>
+        <button onclick="zStep('zImov',5000000)">+5M</button>
+      </div>
+    </div>
+    <div class="f">
+      <label>Custo de aquisição (declaração de IR)</label>
+      <input type="text" inputmode="numeric" id="zCusto" value="3.758.501">
+      <div class="hint" id="zhGanho"></div>
+    </div>
+    <div class="two">
+      <div class="f"><label>Ano da compra</label><input type="number" id="zAno" value="2015" step="1"></div>
+      <div class="f"><label>Rende (IPCA + % a.a.)</label><input type="number" id="zRend" value="7" step="0.25"></div>
+    </div>
+    <div class="f">
+      <label>O rendimento paga imposto <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="zrend">i</span></label>
+      <div class="idx" style="grid-template-columns:1fr 1fr">
+        <button id="zTrib" class="on" onclick="zSetIsento(0)">Tributado 15%</button>
+        <button id="zIsen" onclick="zSetIsento(1)">Isento</button>
+      </div>
+      <div class="hint" id="zhIsento"></div>
+    </div>
+
+    <h3 style="margin-top:15px">As cotas <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="zcotas">i</span></h3>
+    <div class="f">
+      <label>Como definir a quantidade</label>
+      <div class="idx" style="grid-template-columns:1fr 1fr">
+        <button id="zmA" class="on" onclick="zSetModo('milhao')">Cotas por milhão</button>
+        <button id="zmB" onclick="zSetModo('exato')">Número exato</button>
+      </div>
+    </div>
+    <div class="f" id="zBoxMilhao">
+      <label>Cotas por milhão de crédito</label>
+      <input type="number" id="zCpM" value="2.5" step="0.5" min="0.5" max="50">
+      <div class="steps">
+        <button onclick="zSet('zCpM',1)">1</button>
+        <button onclick="zSet('zCpM',2)">2</button>
+        <button onclick="zSet('zCpM',2.5)">2,5</button>
+        <button onclick="zSet('zCpM',3)">3</button>
+        <button onclick="zSet('zCpM',4)">4</button>
+      </div>
+      <div class="hint" id="zhCotas"></div>
+    </div>
+    <div class="f" id="zBoxExato" style="display:none">
+      <label>Número de cotas</label>
+      <input type="number" id="zNC" value="37" step="1" min="1" max="500">
+      <div class="steps">
+        <button onclick="zStepN('zNC',-10)">−10</button>
+        <button onclick="zStepN('zNC',-1)">−1</button>
+        <button onclick="zStepN('zNC',1)">+1</button>
+        <button onclick="zStepN('zNC',10)">+10</button>
+      </div>
+      <div class="hint" id="zhCotas2"></div>
+    </div>
+    <div class="two">
+      <div class="f"><label>Prazo (meses)</label><input type="number" id="zPz" value="240" step="10"></div>
+      <div class="f"><label>Redutor da parcela (%)</label><input type="number" id="zRed" value="50" step="5"></div>
+    </div>
+
+    <h3 style="margin-top:15px">A contemplação <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="zcont">i</span></h3>
+    <div class="two">
+      <div class="f"><label>Primeira no mês</label><input type="number" id="zIni" value="12" step="1" min="1"></div>
+      <div class="f"><label>A cada (meses)</label><input type="number" id="zInt" value="12" step="1" min="1"></div>
+    </div>
+    <div class="f">
+      <label>Terminar de contemplar até o mês</label>
+      <input type="number" id="zFim" value="60" step="6" min="1">
+      <div class="steps">
+        <button onclick="zSet('zFim',24)">24</button>
+        <button onclick="zSet('zFim',36)">36</button>
+        <button onclick="zSet('zFim',48)">48</button>
+        <button onclick="zSet('zFim',60)">60</button>
+        <button onclick="zSet('zFim',84)">84</button>
+      </div>
+      <div class="hint" id="zhCont"></div>
+    </div>
+
+    <h3 style="margin-top:15px">Ver o cenário no mês</h3>
+    <div class="f main">
+      <input type="number" id="zMes" value="12" step="1" min="1">
+      <div class="steps">
+        <button onclick="zSet('zMes',1)">1</button>
+        <button onclick="zSet('zMes',12)">12</button>
+        <button onclick="zSet('zMes',24)">24</button>
+        <button onclick="zSet('zMes',60)">60</button>
+        <button onclick="zSet('zMes',120)">120</button>
+      </div>
+      <div class="hint">Digite qualquer mês e o quadro do meio mostra a foto daquele momento.</div>
+    </div>
+
+    <button class="advb" id="zAdvT" onclick="zAdv()">▸ Ajustes avançados</button>
+    <div id="zAdvBox" style="display:none">
+      <div class="two">
+        <div class="f"><label>Lance embutido (%)</label><input type="number" id="zEmb" value="30" step="1"></div>
+        <div class="f"><label>Lance total (%)</label><input type="number" id="zLan" value="40" step="1"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label>Taxa adm (%)</label><input type="number" id="zAdm" value="19.5" step="0.5"></div>
+        <div class="f"><label>Fundo reserva (%)</label><input type="number" id="zFr" value="2" step="0.5"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label>ITBI (%)</label><input type="number" id="zItbi" value="3" step="0.1"></div>
+        <div class="f"><label>Cartório (%)</label><input type="number" id="zCart" value="1" step="0.1"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label>Outros custos (%)</label><input type="number" id="zOut" value="1.3" step="0.1"></div>
+        <div class="f"><label>IR do rendimento (%)</label><input type="number" id="zIrr" value="15" step="1" min="0" max="100"></div>
+      </div>
+      <div class="f">
+        <label>Reajuste da cota (% a.a.)</label>
+        <div class="idx" style="grid-template-columns:1fr 1fr">
+          <button onclick="zSet('zReaj',5.54)">INCC 10 anos<br><span>5,54%</span></button>
+          <button onclick="zSet('zReaj',6.14)">INCC 5 anos<br><span>6,14%</span></button>
+          <button onclick="zSet('zReaj',5.45)">Últimos 12m<br><span>5,45%</span></button>
+          <button onclick="zSet('zReaj',4.5)">Só IPCA<br><span>4,50%</span></button>
+        </div>
+        <input type="number" id="zReaj" value="5.54" step="0.1" style="margin-top:8px">
+      </div>
+      <div class="f"><label>IPCA de referência (% a.a.)</label><input type="number" id="zIpca" value="4.5" step="0.1"></div>
+      <div class="hint">A Porto corrige a cota de imóvel por 50% IPCA + 50% INCC. Os botões já trazem a média dos dois. Tudo nesta aba está em reais de hoje, com a inflação já descontada, por isso o rendimento também é informado acima do IPCA.</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="hero">
+      <div>
+        <div class="big" id="zH1">R$ 0</div>
+        <div class="lb" id="zH1b">sai do bolso da família ao todo</div>
+      </div>
+      <div class="rgt">
+        <div><div class="v" id="zH2">R$ 0</div><div class="l">capital no fim</div></div>
+        <div><div class="v" id="zH3">0%</div><div class="l">precisa render</div></div>
+      </div>
+    </div>
+
+    <div class="jr">
+      <div class="mo">
+        <div class="tp"><div class="dot">1</div><div class="hd"><div class="tt">As cotas</div><div class="st">todas fechadas em D0</div></div>
+          <button class="plus" id="zpl1" onclick="zDet(1)">+ info</button></div>
+        <div class="det" id="zdt1">
+          <div class="dr"><span class="a">Líquido que se quer receber</span><span class="b" id="zi11">R$ 0</span></div>
+          <div class="dr"><span class="a">Embutido sai de dentro da carta</span><span class="b" id="zi12">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Crédito a contratar</span><span class="b" id="zi13">R$ 0</span></div>
+          <div class="dr"><span class="a">Taxa adm mais fundo de reserva</span><span class="b" id="zi14">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Categoria, a dívida total</span><span class="b" id="zi15">R$ 0</span></div>
+          <div class="dr"><span class="a">Parcela integral somada</span><span class="b" id="zi16">R$ 0</span></div>
+          <div class="dr"><span class="a">Com o redutor aplicado</span><span class="b" id="zi17">R$ 0</span></div>
+          <div class="tx" id="zi18"></div>
+        </div>
+        <div class="li"><div class="lk">Crédito total a contratar</div><div class="lv" id="za1">R$ 0</div></div>
+        <div class="li"><div class="lk" id="za2k">Quantas cotas</div><div class="lv" id="za2">0</div><div class="ls" id="za2b"></div></div>
+        <div class="li"><div class="lk">Parcela de cada cota</div><div class="lv" id="za3">R$ 0</div><div class="ls" id="za3b"></div></div>
+        <div class="li tot"><div class="lk">Parcela em D0, somada</div><div class="lv bl" id="za4">R$ 0</div><div class="ls">com o redutor aplicado</div></div>
+      </div>
+      <div class="mo">
+        <div class="tp"><div class="dot">2</div><div class="hd"><div class="tt">O que sai do bolso</div><div class="st">antes do capital sustentar</div></div>
+          <button class="plus" id="zpl2" onclick="zDet(2)">+ info</button></div>
+        <div class="det" id="zdt2">
+          <div class="dr"><span class="a">Lance ofertado por cota</span><span class="b" id="zi21">R$ 0</span></div>
+          <div class="dr"><span class="a">Parte coberta pelo embutido</span><span class="b" id="zi22">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Recurso próprio por cota</span><span class="b" id="zi23">R$ 0</span></div>
+          <div class="dr"><span class="a">Número de contemplações</span><span class="b" id="zi24">0</span></div>
+          <div class="dr"><span class="a">Lances, somados</span><span class="b" id="zi25">R$ 0</span></div>
+          <div class="dr"><span class="a">Parcelas sem cobertura do capital</span><span class="b" id="zi26">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Esforço total</span><span class="b" id="zi27">R$ 0</span></div>
+          <div class="tx" id="zi28"></div>
+        </div>
+        <div class="li"><div class="lk">Lance próprio por cota</div><div class="lv" id="zb1">R$ 0</div></div>
+        <div class="li"><div class="lk">Lances, no total</div><div class="lv rd" id="zb2">R$ 0</div></div>
+        <div class="li"><div class="lk">Parcelas até o capital entrar</div><div class="lv rd" id="zb3">R$ 0</div><div class="ls" id="zb3b"></div></div>
+        <div class="li tot"><div class="lk">Esforço total da família</div><div class="lv" id="zb4">R$ 0</div><div class="ls" id="zb4b"></div></div>
+      </div>
+      <div class="mo">
+        <div class="tp"><div class="dot">3</div><div class="hd"><div class="tt">O que entra</div><div class="st">e vira capital investido</div></div>
+          <button class="plus" id="zpl3" onclick="zDet(3)">+ info</button></div>
+        <div class="det" id="zdt3">
+          <div class="dr"><span class="a">Valor de venda dos imóveis</span><span class="b" id="zi31">R$ 0</span></div>
+          <div class="dr"><span class="a">Quanto pagaram na compra</span><span class="b" id="zi32">R$ 0</span></div>
+          <div class="dr"><span class="a">Ganho de capital</span><span class="b" id="zi33">R$ 0</span></div>
+          <div class="dr"><span class="a">Redutor por tempo de posse</span><span class="b" id="zi34">R$ 0</span></div>
+          <div class="dr"><span class="a">Base tributável</span><span class="b" id="zi35">R$ 0</span></div>
+          <div class="dr"><span class="a">Imposto de renda</span><span class="b" id="zi36">R$ 0</span></div>
+          <div class="dr"><span class="a">ITBI</span><span class="b" id="zi37">R$ 0</span></div>
+          <div class="dr"><span class="a">Cartório e honorários</span><span class="b" id="zi38">R$ 0</span></div>
+          <div class="dr acc"><span class="a">Entra investido</span><span class="b" id="zi39">R$ 0</span></div>
+          <div class="tx" id="zi3a"></div>
+        </div>
+        <div class="li"><div class="lk">Crédito líquido recebido</div><div class="lv" id="zc1">R$ 0</div></div>
+        <div class="li"><div class="lk">Impostos e custos da venda</div><div class="lv rd" id="zc2">R$ 0</div><div class="ls" id="zc2b"></div></div>
+        <div class="li"><div class="lk">Entra investido</div><div class="lv" id="zc3">R$ 0</div></div>
+        <div class="li tot"><div class="lk">Sobra no fim do prazo</div><div class="lv g" id="zc4">R$ 0</div><div class="ls">em reais de hoje</div></div>
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="th"><div><div class="tt">Os custos de passar os imóveis para a holding</div><div class="st" id="zcuS">compra e venda, sem imunidade de ITBI</div></div></div>
+      <div class="tlg">
+        <div class="tc"><div class="k">ITBI</div><div class="v rd" id="zq1">R$ 0</div><div class="s" id="zq1b"></div></div>
+        <div class="tc"><div class="k">Imposto sobre o ganho</div><div class="v rd" id="zq2">R$ 0</div><div class="s" id="zq2b"></div></div>
+        <div class="tc"><div class="k">Cartório e honorários</div><div class="v" id="zq3">R$ 0</div><div class="s" id="zq3b"></div></div>
+        <div class="tc"><div class="k">Total para transferir</div><div class="v gd" id="zq4">R$ 0</div><div class="s" id="zq4b"></div></div>
+      </div>
+      <div class="note" id="zqN"></div>
+    </div>
+
+    <div class="tl">
+      <div class="th"><div><div class="tt">A foto do mês <span id="zmT">12</span></div><div class="st" id="zmS"></div></div></div>
+      <div class="tlg">
+        <div class="tc"><div class="k">Cotas contempladas</div><div class="v bl" id="zm1">0</div><div class="s" id="zm1b"></div></div>
+        <div class="tc"><div class="k">Parcela nesse mês</div><div class="v" id="zm2">R$ 0</div><div class="s" id="zm2b"></div></div>
+        <div class="tc"><div class="k">Capital investido</div><div class="v g" id="zm3">R$ 0</div><div class="s" id="zm3b"></div></div>
+        <div class="tc"><div class="k">Rendimento do mês</div><div class="v" id="zm4">R$ 0</div><div class="s" id="zm4b"></div></div>
+      </div>
+      <div class="note" id="zmN"></div>
+    </div>
+
+    <div class="tl" id="zCardEq">
+      <div class="th"><div><div class="tt">O ponto de equilíbrio</div><div class="st">quanto o capital precisa render para a conta se sustentar sozinha</div></div></div>
+      <div class="tlg">
+        <div class="tc"><div class="k">Precisa render</div><div class="v gd" id="ze1">0%</div><div class="s" id="ze1b">na tabela do papel</div></div>
+        <div class="tc"><div class="k">Você colocou</div><div class="v" id="ze2">0%</div><div class="s" id="ze2b"></div></div>
+        <div class="tc"><div class="k">Margem</div><div class="v" id="ze3">0 pp</div><div class="s" id="ze3b"></div></div>
+        <div class="tc"><div class="k">Equilíbrio, já líquido</div><div class="v" id="ze4">0%</div><div class="s" id="ze4b"></div></div>
+      </div>
+      <div class="note" id="zeN"></div>
+    </div>
+
+    <div class="tl">
+      <div class="th"><div><div class="tt">Ano a ano</div><div class="st">tudo em reais de hoje, já descontada a inflação</div></div></div>
+      <div class="ktab">
+        <table id="zTab"><thead><tr><th>Ano</th><th>Mês</th><th>Contempladas</th><th>Parcela/mês</th><th>Rendimento/mês</th><th>Capital</th><th>Do bolso (acum.)</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="rot">
+      <span class="h">Como contar</span>
+      <div id="zRot"></div>
+    </div>
+
+    <div class="wr">
+      <div class="t">O que esta aba não cobre, e onde está</div>
+      <p><b>O quadro das leis</b> está na aba Holding, e vale igual aqui: os redutores legais do ganho de capital, o escalonamento do IR por exercício, a preponderância imobiliária e o propósito negocial. Esta operação é compra e venda, então não há imunidade de ITBI a discutir.<br>
+      <b>O ITCMD e a doação das quotas</b> também estão na aba Holding. São a segunda metade do planejamento: aqui os imóveis entram na empresa, lá se decide como as quotas passam aos herdeiros.<br>
+      <b>A comparação com integralizar</b> está na aba Holding, no interruptor de rota. Integralizar custa quase nada e não gera capital nenhum. Esta aba existe justamente para o caso em que o objetivo é destravar liquidez.<br>
+      <b>A contemplação não é garantida.</b> O calendário aqui é um plano de oferta de lance, não um compromisso da administradora. Rode sempre um cenário mais lento que o esperado antes de apresentar.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+
 <div class="foot">
   Valores referenciais, sujeitos a confirmação na formalização. Campanhas e taxas mudam.<br>
   INCC-M histórico: FGV via Dados de Mercado. Índice de correção do consórcio de imóvel: Porto Seguro.<br>
@@ -1059,7 +1321,32 @@ var TT={
     'Na prática: cliente que mora em São Paulo, com imóveis espalhados por três estados, doando quotas paga <b>4% em São Paulo sobre tudo</b>. Doando os imóveis direto, pagaria a alíquota de cada estado, e vários chegam a 8%.<br><br>'+
     '<b>Cuidado com dois pontos.</b> Primeiro, alguns estados, Minas Gerais em especial, já tentaram cobrar pela localização do imóvel dentro da holding. Isso é contestado como inconstitucional, mas gera briga. Segundo, o domicílio precisa ser <b>real</b>: mudar o endereço no papel às vésperas da doação é simulação, e o fisco desfaz.<br><br>'+
     '<b>O ITBI é outra história.</b> Ele é municipal e incide sempre no <b>município onde o imóvel está</b>, sem exceção e sem escolha. Por isso o campo de ITBI da calculadora fica separado, em ajustes avançados: você ajusta conforme a prefeitura de cada imóvel.',
-  r:'Constituição, art. 155, §1º, I (imóveis) e II (bens móveis, títulos e créditos), com a redação da EC 132/2023. Código Civil, art. 83, III. Alíquotas levantadas em agosto de 2026; as marcadas com aviso não puderam ser confirmadas em documento oficial.'}
+  r:'Constituição, art. 155, §1º, I (imóveis) e II (bens móveis, títulos e créditos), com a redação da EC 132/2023. Código Civil, art. 83, III. Alíquotas levantadas em agosto de 2026; as marcadas com aviso não puderam ser confirmadas em documento oficial.'},
+
+ zcotas:{t:'Por que fracionar em muitas cotas',
+  b:'Você pode contratar o mesmo crédito em poucas cotas grandes ou em muitas cotas pequenas. A parcela somada é praticamente a mesma, mas o comportamento muda bastante.<br><br>'+
+    '<b>Mais chances de contemplação.</b> Cada cota é um bilhete no sorteio e uma posição na fila de lance. Trinta cotas concorrem trinta vezes por assembleia, uma cota concorre uma vez.<br><br>'+
+    '<b>Entrada de capital mais suave.</b> Com cotas pequenas o dinheiro chega em fatias, e você vai comprando os imóveis aos poucos, no ritmo em que consegue fazer escritura e registro.<br><br>'+
+    '<b>Lance menor por vez.</b> O recurso próprio de cada contemplação é proporcional ao tamanho da cota. Cota menor, cheque menor, menos aperto de caixa.<br><br>'+
+    '<b>Flexibilidade se algo mudar.</b> Precisou parar? Você suspende parte das cotas em vez de desmontar a operação inteira.<br><br>'+
+    'O custo de fracionar é operacional: mais contratos, mais boletos, mais assembleias para acompanhar. E cada administradora tem um crédito mínimo por cota, então confirme antes de desenhar.',
+  r:'A quantidade de cotas não altera a taxa de administração nem o fundo de reserva, que são percentuais sobre o crédito de cada uma.'},
+
+ zcont:{t:'O ritmo da contemplação, e por que ele custa dinheiro',
+  b:'Todas as cotas são fechadas hoje e todas começam a pagar parcela hoje. Mas o crédito só chega quando cada uma é contemplada.<br><br>'+
+    '<b>Aí está o custo do escalonamento:</b> uma cota que só contempla no mês 60 passou 60 meses pagando sem ter entregue capital nenhum. Quanto mais longo o calendário, mais tempo o caixa da família sustenta sozinho.<br><br>'+
+    'Por isso, na simulação, antecipar as contemplações sempre melhora o resultado. Terminar no mês 48 em vez do 60 costuma valer algumas centenas de milhares no fim.<br><br>'+
+    '<b>Mas cuidado com a premissa.</b> Você controla quando <b>oferta</b> o lance, não quando é <b>contemplado</b>. O calendário aqui é um plano, não uma garantia. Rode também um cenário com a contemplação mais lenta do que você espera e veja se a família aguenta.<br><br>'+
+    'É justamente para reduzir esse risco que faz sentido fracionar em muitas cotas.',
+  r:'Contemplação por sorteio ou lance depende da assembleia do grupo e da concorrência dos demais consorciados. Nenhuma administradora garante data.'},
+
+ zrend:{t:'Por que o imposto do rendimento decide a operação',
+  b:'O ponto de equilíbrio desta operação é uma taxa <b>líquida</b>. O que importa é o que sobra no bolso depois do Leão, não o que está escrito na tabela.<br><br>'+
+    '<b>Papel tributado</b> (Tesouro, CDB, fundo de renda fixa) paga 15% no prazo longo. Um título de IPCA + 7% entrega perto de IPCA + 5,3% depois do imposto.<br><br>'+
+    '<b>Papel isento</b> (debênture incentivada, CRI, CRA, LCI, LCA) não paga IR na pessoa física. IPCA + 7% na tabela é IPCA + 7% no bolso.<br><br>'+
+    'Na prática isso significa que a mesma taxa de tabela entrega quase <b>dois pontos a mais</b> de folga quando o papel é isento. Numa operação que se decide por menos de um ponto, isso não é detalhe de execução, é parte da estrutura.<br><br>'+
+    'A escolha entre um e outro envolve prazo, risco de crédito, liquidez e o perfil do investidor. Não existe resposta automática.',
+  r:'Isenção de IR na pessoa física: Lei 12.431/2011 (debêntures incentivadas), Lei 11.033/2004 (CRI e CRA) e Lei 8.981/1995 com alterações (LCI e LCA). Alíquota de 15% para renda fixa acima de 720 dias: Lei 11.033/2004, art. 1º.'}
 };
 var ttAtual=null;
 function ttc(){var e=document.getElementById('tt');e.className='';
@@ -1099,9 +1386,11 @@ window.addEventListener('scroll',ttp,true);
 var base='cre', acomp=true;
 var IDS=['vImov','vCusto','vAno','vTx','vRed','vMc','vIdx','vMes','vAdm','vFr','vPz','vEmb','vLan','vItbi','vCart','vIrr'];
 var MASK=['vImov','vCusto'];
-function n(i){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?0:v}
+var TETO=1e12;
+function lim(v){return (!isFinite(v))?0:Math.max(Math.min(v,TETO),-TETO)}
+function n(i){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?0:lim(v)}
 // campos com separador de milhar
-function nm(i){var s=String(document.getElementById(i).value).replace(/\D/g,'');return s?parseInt(s,10):0}
+function nm(i){var s=String(document.getElementById(i).value).replace(/\D/g,'');return s?lim(parseInt(s,10)):0}
 function setm(i,v){document.getElementById(i).value=Math.max(Math.round(v),0).toLocaleString('pt-BR')}
 function mask(el){var p=el.selectionStart,L=el.value.length;
   var s=el.value.replace(/\D/g,'');
@@ -1110,9 +1399,9 @@ function mask(el){var p=el.selectionStart,L=el.value.length;
 function ad(d){setm('vImov',nm('vImov')+d);calc()}
 function ac(d){setm('vCusto',nm('vCusto')+d);calc()}
 function pctv(p){setm('vCusto',nm('vImov')*p);calc()}
-function m(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR')}
-function m2(v){return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function pc(v,d){return v.toFixed(d===undefined?2:d).replace('.',',')+'%'}
+function m(v){return isFinite(v)?('R$ '+Math.round(v).toLocaleString('pt-BR')):'R$ 0'}
+function m2(v){return isFinite(v)?('R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})):'R$ 0,00'}
+function pc(v,d){return isFinite(v)?(v.toFixed(d===undefined?2:d).replace('.',',')+'%'):'0%'}
 function setBase(b){base=b;
   document.getElementById('bCre').className=(b==='cre'?'on':'');
   document.getElementById('bCat').className=(b==='cat'?'on':'');calc()}
@@ -1246,13 +1535,21 @@ function setEst(e){EST=e;calc()}
 function calc(){
   var V=nm('vImov'); if(V<=0)V=1;
   var custo=Math.min(Math.max(nm('vCusto'),0),V);
-  var tx=n('vTx')/100, red=n('vRed')/100, idx=n('vIdx')/100;
+  /* clamps de sanidade: sem eles um numero absurdo vira Infinity na tela */
+  var tx=Math.min(Math.max(n('vTx'),0),50)/100;
+  if(Math.abs(n('vTx')-tx*100)>1e-9)document.getElementById('vTx').value=(tx*100).toFixed(2);
+  var idx=Math.min(Math.max(n('vIdx'),-50),100)/100;
+  if(Math.abs(n('vIdx')-idx*100)>1e-9)document.getElementById('vIdx').value=(idx*100).toFixed(2);
+  var red=Math.min(Math.max(n('vRed'),0),90)/100;
+  if(Math.abs(n('vRed')-red*100)>1e-9)document.getElementById('vRed').value=Math.round(red*100);
   var pz=Math.min(Math.max(Math.round(n('vPz')),2),600), mc=Math.round(n('vMc'));
   if(Math.round(n('vPz'))!==pz)document.getElementById('vPz').value=pz;
   if(mc<1)mc=1; if(mc>=pz)mc=pz-1;
   if(Math.round(n('vMc'))!==mc)document.getElementById('vMc').value=mc;
   var adm=n('vAdm')/100,fr=n('vFr')/100,pe=n('vEmb')/100,pl=n('vLan')/100;
-  var ITBI=n('vItbi')/100,CART=n('vCart')/100,IRR=n('vIrr')/100;
+  var ITBI=n('vItbi')/100,CART=n('vCart')/100;
+  var IRR=Math.min(Math.max(n('vIrr'),0),100)/100;
+  if(Math.abs(n('vIrr')-IRR*100)>1e-9)document.getElementById('vIrr').value=Math.round(IRR*100);
   var mes=Math.min(Math.max(Math.round(n('vMes')),1),pz);
   if(Math.round(n('vMes'))!==mes)document.getElementById('vMes').value=mes;
 
@@ -1605,16 +1902,306 @@ document.getElementById('stamp').textContent='Atualizado em '+new Date().toLocal
 
 calc();
 
+
+/* ================= ABA ESCALONADO ================= */
+var zIsento=0, zModo='milhao';
+function zn(i){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?0:lim(v)}
+function znm(i){var t=String(document.getElementById(i).value).replace(/\D/g,'');return t?lim(parseInt(t,10)):0}
+function zSet(i,v){document.getElementById(i).value=v;zCalc()}
+function zSetN(i,v){document.getElementById(i).value=v;zCalc()}
+function zStep(i,d){var e=document.getElementById(i),v=Math.max(znm(i)+d,0);
+  e.value=v.toLocaleString('pt-BR');zCalc()}
+function zStepN(i,d){var e=document.getElementById(i);e.value=Math.max(Math.round(zn(i)+d),1);zCalc()}
+function zSetIsento(v){zIsento=v;
+  document.getElementById('zTrib').className=(v?'':'on');
+  document.getElementById('zIsen').className=(v?'on':'');zCalc()}
+function zSetModo(m){zModo=m;
+  document.getElementById('zmA').className=(m==='milhao'?'on':'');
+  document.getElementById('zmB').className=(m==='exato'?'on':'');
+  document.getElementById('zBoxMilhao').style.display=(m==='milhao'?'block':'none');
+  document.getElementById('zBoxExato').style.display=(m==='exato'?'block':'none');zCalc()}
+function zDet(i){var d=document.getElementById('zdt'+i),b=document.getElementById('zpl'+i);
+  d.classList.toggle('on');b.classList.toggle('on');
+  b.textContent=d.classList.contains('on')?'fechar':'+ info'}
+function zAdv(){var b=document.getElementById('zAdvBox'),t=document.getElementById('zAdvT');
+  var on=b.style.display==='none'; b.style.display=on?'block':'none';
+  t.textContent=(on?'▾':'▸')+' Ajustes avançados'}
+
+/* motor: todas as cotas fechadas em D0, contemplacoes escalonadas.
+   tudo em REAIS DE HOJE: a parcela sobe o quanto o reajuste supera o IPCA. */
+function zEngine(o){
+  var k=1+o.adm+o.fr;
+  var cred=o.liq/(1-o.emb);              // credito total necessario
+  var nc=Math.max(Math.round(o.nc),1);
+  var cl=cred/nc, cat=cl*k;
+  var pi=cat/o.pz, pr=pi*(1-o.red);
+  var bol=cl*(o.lan-o.emb);              // recurso proprio por cota
+  var entL=(o.liq/nc)*(1-o.custoPct);    // capital liquido por contemplacao
+  /* calendario de contemplacoes: distribui nc cotas entre ini e fim, no intervalo int */
+  var slots=[], t=o.ini;
+  while(t<=o.fim && slots.length<600){slots.push(t); t+=o.intv}
+  if(!slots.length)slots=[o.ini];
+  var porSlot=nc/slots.length;
+  var quando=[];                          // mes de contemplacao de cada cota
+  for(var i=0;i<nc;i++){var idx=Math.min(Math.floor(i/porSlot),slots.length-1);quando.push(slots[idx])}
+  var contPorMes={};
+  quando.forEach(function(m){contPorMes[m]=(contPorMes[m]||0)+1});
+  /* parcela pos-contemplacao de uma cota contemplada no mes mc */
+  function pos(mc){var sd=cat-pr*mc-cl*o.lan; return Math.max(sd/(o.pz-mc),pi/2)}
+  var mr=Math.pow(1+o.rReal,1/12)-1;
+  var mp=Math.pow(1+o.parcReal,1/12)-1;
+  var cap=0,bolso=0,pico=0,lances=0,parcAntes=0,capTotal=0,primEnt=null;
+  var serie=[];
+  for(var m=1;m<=o.pz;m++){
+    var g=Math.pow(1+mp,m);
+    var parc=0,nCont=0;
+    for(var j=0;j<nc;j++){
+      var mc=quando[j];
+      if(m<=mc)parc+=pr*g; else parc+=pos(mc)*g;
+      if(m>=mc)nCont++;
+    }
+    var lan=(contPorMes[m]||0)*bol;
+    var ent=(contPorMes[m]||0)*entL;
+    if(ent>0&&primEnt===null)primEnt=m;
+    lances+=lan; capTotal+=ent;
+    var rend=cap*mr;
+    cap+=rend+ent;
+    bolso+=lan;                            // o lance sai sempre do bolso
+    if(cap>=parc)cap-=parc; else{bolso+=parc-cap; parcAntes+=parc-cap; cap=0}
+    if(bolso>pico)pico=bolso;
+    serie.push({m:m,parc:parc,nCont:nCont,cap:cap,rend:rend,bolso:bolso,ent:ent,lan:lan});
+  }
+  return {cred:cred,nc:nc,cl:cl,cat:cat,pi:pi,pr:pr,bol:bol,entL:entL,
+          parcD0:pr*nc,lances:lances,parcAntes:parcAntes,bolso:pico,
+          capFim:cap,capTotal:capTotal,serie:serie,quando:quando,
+          slots:slots,primEnt:primEnt,ultCont:quando.reduce(function(a,b){return b>a?b:a},0)};
+}
+function zLer(rOverride){
+  var liq=znm('zImov'); if(liq<=0)liq=1;
+  var emb=zn('zEmb')/100, lan=zn('zLan')/100;
+  if(emb>=.95)emb=.95; if(lan<emb)lan=emb;
+  var cred=liq/(1-emb);
+  var nc = (zModo==='milhao') ? Math.round(zn('zCpM')*cred/1e6) : Math.round(zn('zNC'));
+  nc = Math.min(Math.max(nc,1),500);          /* teto: acima disso é inviável operacionalmente */
+  if(zModo==='exato' && Math.round(zn('zNC'))!==nc) document.getElementById('zNC').value=nc;
+  var pz=Math.min(Math.max(Math.round(zn('zPz')),12),480);
+  if(Math.round(zn('zPz'))!==pz)document.getElementById('zPz').value=pz;
+  var ini=Math.min(Math.max(Math.round(zn('zIni')),1),pz-1);
+  if(Math.round(zn('zIni'))!==ini)document.getElementById('zIni').value=ini;
+  var intv=Math.min(Math.max(Math.round(zn('zInt')),1),120);
+  var fim=Math.min(Math.max(Math.round(zn('zFim')),ini),pz-1);
+  if(Math.round(zn('zFim'))!==fim)document.getElementById('zFim').value=fim;
+  var ipca=zn('zIpca')/100, reaj=zn('zReaj')/100;
+  var parcReal=(1+reaj)/(1+ipca)-1;
+  if(parcReal<=-0.99)parcReal=-0.99;
+  var rBruto=(rOverride!==undefined?rOverride:zn('zRend')/100);
+  /* se tributado, o IR come parte do rendimento nominal */
+  var alqIR=Math.min(Math.max(zn('zIrr'),0),100)/100;
+  if(Math.abs(zn('zIrr')-alqIR*100)>1e-9)document.getElementById('zIrr').value=Math.round(alqIR*100);
+  var rReal=rBruto;
+  if(!zIsento){var nom=(1+ipca)*(1+rBruto)-1; var nomLiq=nom*(1-alqIR); rReal=(1+nomLiq)/(1+ipca)-1}
+  if(rReal<=-0.99)rReal=-0.99;                  /* raiz de base negativa vira NaN */
+  return {liq:liq,nc:nc,pz:pz,red:zn('zRed')/100,emb:emb,lan:lan,
+          adm:zn('zAdm')/100,fr:zn('zFr')/100,ini:ini,intv:intv,fim:fim,
+          rReal:rReal,parcReal:parcReal,ipca:ipca,
+          custoPct:zCustoPct()};
+}
+function zCustoPct(){
+  var V=znm('zImov'), C=znm('zCusto');
+  var ganho=Math.max(V-C,0);
+  var RD=redutores(Math.round(zn('zAno')),24);
+  var ir=irGC(ganho*RD.fator);
+  return (ir + V*(zn('zItbi')/100) + V*(zn('zCart')/100) + V*(zn('zOut')/100))/Math.max(V,1);
+}
+function zEquilibrio(){
+  var lo=0.001,hi=0.30,mid,piso=zEngine(zLer(0.30)).bolso*1.01+5000;
+  for(var i=0;i<70;i++){mid=(lo+hi)/2;
+    if(zEngine(zLer(mid)).bolso>piso)lo=mid; else hi=mid}
+  return mid;
+}
+function zCalc(){
+  var o=zLer(), R=zEngine(o);
+  var V=znm('zImov'), C=znm('zCusto');
+  var ganho=Math.max(V-C,0), RD=redutores(Math.round(zn('zAno')),24);
+  var ir=irGC(ganho*RD.fator);
+  var custos=ir+V*(zn('zItbi')/100)+V*(zn('zCart')/100)+V*(zn('zOut')/100);
+
+  document.getElementById('zhGanho').innerHTML='Ganho de capital de <b>'+m(ganho)+'</b>. Redutor legal corta <b>'+
+    pc((1-RD.fator)*100,0)+'</b> da base, imposto de <b>'+m(ir)+'</b>.';
+  document.getElementById('zhIsento').textContent = zIsento
+    ? 'Debênture incentivada, CRI, CRA, LCI e LCA não pagam IR. O que está na tabela é o que rende.'
+    : 'Tesouro, CDB e fundos pagam '+pc(zn('zIrr'),0)+' no longo prazo. O imposto sai do rendimento e encurta a folga.';
+
+  /* hero */
+  var eq=zEquilibrio();
+  var h1=document.getElementById('zH1');
+  h1.textContent=m(R.bolso); h1.className='big'+(R.capFim<=0?' neg':'');
+  document.getElementById('zH2').textContent=m(R.capFim);
+  document.getElementById('zH3').textContent='IPCA+'+pc(eq*100,2);
+
+  /* quadrante 1 */
+  document.getElementById('za1').textContent=m(R.cred);
+  document.getElementById('za2').textContent=R.nc+(R.nc>1?' cotas':' cota');
+  document.getElementById('za2b').textContent=m(R.cl)+' de crédito cada, categoria de '+m(R.cat);
+  document.getElementById('za2k').textContent = 'Quantas cotas';
+  document.getElementById('za3').textContent=m(R.pr);
+  document.getElementById('za3b').textContent='sem redutor seria '+m(R.pi);
+  document.getElementById('za4').textContent=m(R.parcD0);
+
+  /* quadrante 2 */
+  document.getElementById('zb1').textContent=m(R.bol);
+  document.getElementById('zb2').textContent=m(R.lances);
+  document.getElementById('zb3').textContent=m(R.parcAntes);
+  document.getElementById('zb3b').textContent='enquanto o capital ainda não sustenta';
+  document.getElementById('zb4').textContent=m(R.bolso);
+  document.getElementById('zb4b').textContent = V>0 ? pc(R.bolso/V*100,1)+' do valor dos imóveis' : '';
+
+  /* quadrante 3 */
+  document.getElementById('zc1').textContent=m(V);
+  document.getElementById('zc2').textContent='- '+m(custos);
+  document.getElementById('zc2b').textContent='ITBI, IR do ganho, cartório e honorários, '+pc(custos/Math.max(V,1)*100,2);
+  document.getElementById('zc3').textContent=m(R.capTotal);
+  var c4=document.getElementById('zc4');
+  c4.textContent=m(R.capFim); c4.className='lv '+(R.capFim>0?'g':'rd');
+
+  /* ---- card de custos ---- */
+  var aItbi=V*(zn('zItbi')/100), aCart=V*(zn('zCart')/100)+V*(zn('zOut')/100);
+  document.getElementById('zq1').textContent=m(aItbi);
+  document.getElementById('zq1b').textContent=pc(zn('zItbi'),1)+' sobre o valor de venda';
+  document.getElementById('zq2').textContent=m(ir);
+  document.getElementById('zq2b').textContent = ganho>0 ? 'sobre '+m(ganho*RD.fator)+' de base, já com o redutor' : 'sem ganho a apurar';
+  document.getElementById('zq3').textContent=m(aCart);
+  document.getElementById('zq3b').textContent='escritura, registro, laudo e assessoria';
+  document.getElementById('zq4').textContent=m(custos);
+  document.getElementById('zq4b').textContent=pc(custos/Math.max(V,1)*100,2)+' do valor dos imóveis';
+  var irSem=irGC(ganho);
+  document.getElementById('zqN').innerHTML='Compra e venda não tem imunidade de ITBI: a imunidade do artigo 156 da Constituição vale para integralização de capital, não para operação onerosa. '+
+    'O ganho de capital é apurado em cada pessoa física vendedora, e cada uma tem a própria faixa de 15%, o que ajuda quando são vários vendedores. '+
+    (irSem-ir>0?'O redutor legal por tempo de posse corta <b>'+pc((1-RD.fator)*100,0)+'</b> da base e economiza <b>'+m(irSem-ir)+'</b> de imposto. ':'')+
+    'Vender em exercícios diferentes dilui ainda mais o imposto, porque a faixa recomeça a cada ano.';
+
+  /* ---- + info do quadrante 1 ---- */
+  document.getElementById('zi11').textContent=m(V);
+  document.getElementById('zi12').textContent='+ '+m(R.cred-V);
+  document.getElementById('zi13').textContent=m(R.cred);
+  document.getElementById('zi14').textContent='+ '+m(R.cat*R.nc-R.cred);
+  document.getElementById('zi15').textContent=m(R.cat*R.nc);
+  document.getElementById('zi16').textContent=m(R.pi*R.nc);
+  document.getElementById('zi17').textContent=m(R.parcD0);
+  document.getElementById('zi18').textContent='Para receber '+m(V)+' líquido a carta precisa ser maior, porque o lance embutido de '+pc(o.emb*100,0)+
+    ' sai de dentro dela. Por isso o crédito contratado é '+m(R.cred)+' e não '+m(V)+'. Somando taxa de administração e fundo de reserva chega-se à categoria, que é a dívida total do grupo. '+
+    'Dividir esse crédito em '+R.nc+' cotas não muda nada disso: a parcela somada é a mesma, o que muda é a chance de contemplação e o tamanho de cada cheque de lance.';
+
+  /* ---- + info do quadrante 2 ---- */
+  document.getElementById('zi21').textContent=m(R.cl*o.lan);
+  document.getElementById('zi22').textContent='- '+m(R.cl*o.emb);
+  document.getElementById('zi23').textContent=m(R.bol);
+  document.getElementById('zi24').textContent=R.slots.length+(R.slots.length>1?' contemplações':' contemplação');
+  document.getElementById('zi25').textContent=m(R.lances);
+  document.getElementById('zi26').textContent=m(R.parcAntes);
+  document.getElementById('zi27').textContent=m(R.bolso);
+  document.getElementById('zi28').textContent='O lance ofertado é '+pc(o.lan*100,0)+' do crédito, mas '+pc(o.emb*100,0)+
+    ' vêm do embutido, que sai da própria carta. Sobram '+pc((o.lan-o.emb)*100,0)+' de recurso próprio, que é o cheque que a família assina em cada contemplação. '+
+    'O lance sai antes de o crédito ser liberado, então ele nunca pode sair do capital investido: é sempre caixa próprio. '+
+    'Somando as parcelas do período em que o capital ainda não sustenta, o esforço total fica em '+m(R.bolso)+'.';
+
+  /* ---- + info do quadrante 3 ---- */
+  document.getElementById('zi31').textContent=m(V);
+  document.getElementById('zi32').textContent='- '+m(C);
+  document.getElementById('zi33').textContent=m(ganho);
+  document.getElementById('zi34').textContent='- '+m(ganho-ganho*RD.fator);
+  document.getElementById('zi35').textContent=m(ganho*RD.fator);
+  document.getElementById('zi36').textContent='- '+m(ir);
+  document.getElementById('zi37').textContent='- '+m(aItbi);
+  document.getElementById('zi38').textContent='- '+m(aCart);
+  document.getElementById('zi39').textContent=m(R.capTotal);
+  document.getElementById('zi3a').textContent='O imposto incide só sobre o ganho, não sobre o valor total. Como os imóveis foram comprados em '+Math.round(zn('zAno'))+
+    ', a lei permite reduzir a base em '+pc((1-RD.fator)*100,0)+' pelo tempo de posse. Depois disso a alíquota é progressiva por faixa, começando em 15%. '+
+    'O que sobra depois de todos os custos é o que efetivamente vira capital investido: '+m(R.capTotal)+'.';
+
+  /* a foto do mes */
+  var mes=Math.min(Math.max(Math.round(zn('zMes')),1),o.pz);
+  if(Math.round(zn('zMes'))!==mes)document.getElementById('zMes').value=mes;
+  var S=R.serie[mes-1];
+  document.getElementById('zmT').textContent=mes;
+  document.getElementById('zmS').textContent='ano '+(mes/12).toFixed(1).replace('.',',')+' da operação';
+  document.getElementById('zm1').textContent=S.nCont+' de '+R.nc;
+  document.getElementById('zm1b').textContent=pc(S.nCont/R.nc*100,0)+' do crédito já recebido';
+  document.getElementById('zm2').textContent=m(S.parc);
+  document.getElementById('zm2b').textContent = S.parc>R.parcD0 ? pc((S.parc/R.parcD0-1)*100,0)+' acima do início' : 'igual ao início';
+  document.getElementById('zm3').textContent=m(S.cap);
+  document.getElementById('zm3b').textContent='de '+m(R.capTotal)+' que entram ao todo';
+  var m4=document.getElementById('zm4');
+  m4.textContent=m(S.rend); m4.className='v '+(S.rend>=S.parc?'g':'');
+  document.getElementById('zm4b').textContent = S.rend>=S.parc
+    ? 'já cobre a parcela sozinho' : 'cobre '+pc(S.rend/Math.max(S.parc,1)*100,0)+' da parcela';
+  var falta=Math.max(S.parc-S.rend,0);
+  document.getElementById('zmN').innerHTML='No mês '+mes+' a família já colocou <b>'+m(S.bolso)+'</b> do próprio bolso, '+
+    (S.nCont===0?'nenhuma cota foi contemplada ainda e a parcela sai inteira do caixa próprio.'
+     :'tem <b>'+S.nCont+'</b> de '+R.nc+' cotas contempladas e <b>'+m(S.cap)+'</b> investidos. ')+
+    (S.nCont>0?(S.ent>0 && S.rend===0
+      ? 'O capital acabou de entrar neste mês, então ele só começa a render a partir do mês seguinte.'
+      : S.rend>=S.parc
+      ? 'O rendimento de <b>'+m(S.rend)+'</b> já paga a parcela de <b>'+m(S.parc)+'</b> e ainda sobra <b>'+m(S.rend-S.parc)+'</b>.'
+      : 'O rendimento de <b>'+m(S.rend)+'</b> ainda não cobre a parcela de <b>'+m(S.parc)+'</b>, faltam <b>'+m(falta)+'</b> que saem do capital.'):'');
+
+  /* equilibrio */
+  var minha=zn('zRend')/100, marg=(minha-eq)*100;
+  document.getElementById('ze1').textContent='IPCA+'+pc(eq*100,2);
+  document.getElementById('ze2').textContent='IPCA+'+pc(minha*100,2);
+  document.getElementById('ze2b').textContent = zIsento?'isento de IR':'antes do IR de '+pc(zn('zIrr'),0);
+  var e3=document.getElementById('ze3');
+  e3.textContent=(marg>=0?'+':'')+pc(marg,2).replace('%',' pp');
+  e3.className='v '+(marg>=0?'g':'rd');
+  document.getElementById('ze3b').textContent = marg>=0?'de folga':'de déficit';
+  var nomEq=(1+o.ipca)*(1+eq)-1, liqEq=zIsento?nomEq:nomEq*(1-zn('zIrr')/100);
+  var realLiq=(1+liqEq)/(1+o.ipca)-1;
+  document.getElementById('ze4').textContent='IPCA+'+pc(realLiq*100,2);
+  document.getElementById('ze4b').textContent = zIsento?'isento, a tabela já é o líquido':'o mesmo equilíbrio depois do IR comer 15%';
+  document.getElementById('zeN').innerHTML = marg>=0
+    ? 'Com <b>'+pc(marg,2).replace('%',' ponto')+'</b> de folga a operação se sustenta sozinha depois que o capital entra. Quanto maior a folga, maior o colchão para meses ruins de mercado e para uma contemplação que demore mais que o previsto.'
+    : '<b>Nesta configuração a conta não fecha.</b> Faltam '+pc(-marg,2).replace('%',' ponto')+' de rentabilidade, e a diferença sai do bolso da família todo mês. Para virar: alongue o prazo, antecipe as contemplações, negocie a taxa de administração ou aloque em papel isento de imposto.';
+
+  /* tabela ano a ano */
+  var tb=document.querySelector('#zTab tbody'); tb.innerHTML='';
+  for(var y=1;y*12<=o.pz;y++){
+    var x=R.serie[y*12-1];
+    var tr=document.createElement('tr');
+    if(x.nCont===R.nc && R.serie[Math.max(y*12-13,0)].nCont<R.nc) tr.className='hot';
+    tr.innerHTML='<td>'+y+'</td><td>'+(y*12)+'</td><td>'+x.nCont+' de '+R.nc+'</td><td>'+m(x.parc)+
+      '</td><td>'+m(x.rend)+'</td><td>'+m(x.cap)+'</td><td>'+m(x.bolso)+'</td>';
+    tb.appendChild(tr);
+  }
+
+  /* hints */
+  document.getElementById('zhCotas').innerHTML='Dá <b>'+R.nc+' cotas</b> de '+m(R.cl)+' de crédito cada. Mais cotas menores aumentam a chance de sorteio e deixam a entrada de capital mais suave.';
+  document.getElementById('zhCotas2').innerHTML='São '+m(R.cl)+' de crédito por cota, o equivalente a <b>'+(R.nc/(R.cred/1e6)).toFixed(1).replace('.',',')+'</b> cotas por milhão.';
+  document.getElementById('zhCont').innerHTML='<b>'+R.slots.length+'</b> contemplações, do mês '+o.ini+' ao mês '+R.ultCont+
+    ', cerca de <b>'+(R.nc/R.slots.length).toFixed(1).replace('.',',')+'</b> cotas por vez.';
+
+  /* roteiro */
+  document.getElementById('zRot').innerHTML=
+    'Fecham <b>'+R.nc+' cotas</b> hoje, somando <b>'+m(R.cred)+'</b> de crédito, e começam pagando <b>'+m(R.parcD0)+'</b> por mês com o redutor de '+pc(o.red*100,0)+'. '+
+    'A cada contemplação entram <b>'+m(R.bol)+'</b> de lance do bolso e saem <b>'+m(R.entL)+'</b> líquidos para investir. '+
+    'Do mês '+o.ini+' ao mês '+R.ultCont+' todas as cotas são contempladas, os imóveis passam para a holding e a pessoa física fica com <b>'+m(R.capTotal)+'</b> investidos. '+
+    'O esforço da família é de <b>'+m(R.bolso)+'</b>, concentrado no começo. '+
+    (R.capFim>0
+      ? 'Rendendo IPCA + '+pc(minha*100,2)+', ao fim dos '+o.pz+' meses o consórcio está quitado, os imóveis estão na holding e sobram <b>'+m(R.capFim)+'</b> em reais de hoje.'
+      : '<span class="rd">Nessa taxa o capital não sustenta as parcelas até o fim e a família precisa complementar.</span>');
+}
+
 /* ================= ABAS ================= */
 function tab(t){
   var T={hold:['Imóveis para a Holding','A holding compra os imóveis com carta de consórcio contemplada. O capital que entra é investido.'],
-         cotas:['Cotas de Consórcio','Montar e vender uma cota contemplada com ágio, ou comprar uma carta no mercado secundário.']};
+         cotas:['Cotas de Consórcio','Montar e vender uma cota contemplada com ágio, ou comprar uma carta no mercado secundário.'],
+         esc:['Case real','Todas as cotas fechadas hoje, contemplando aos poucos. O capital que entra sustenta as parcelas.']};
   document.getElementById('hTit').textContent=T[t][0];
   document.getElementById('hSub').textContent=T[t][1];
   document.getElementById('btnA').style.display=(t==='hold'?'':'none');
-  ['hold','cotas'].forEach(function(x){
-    document.getElementById('t'+(x==='hold'?'Hold':'Cotas')).classList.toggle('on',x===t);
-    document.getElementById('tb'+(x==='hold'?'H':'C')).classList.toggle('on',x===t);
+  var PANE={hold:'tHold',cotas:'tCotas',esc:'tEsc'}, BTN={hold:'tbH',cotas:'tbC',esc:'tbE'};
+  ['hold','cotas','esc'].forEach(function(x){
+    document.getElementById(PANE[x]).classList.toggle('on',x===t);
+    document.getElementById(BTN[x]).classList.toggle('on',x===t);
   });
   window.scrollTo(0,0);
 }
@@ -1627,8 +2214,8 @@ function kSec(s){
 
 /* ================= UTIL ================= */
 var kLiquido=true;
-function kn(i){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?0:v}
-function knm(i){var s=String(document.getElementById(i).value).replace(/\D/g,'');return s?parseInt(s,10):0}
+function kn(i){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?0:lim(v)}
+function knm(i){var s=String(document.getElementById(i).value).replace(/\D/g,'');return s?lim(parseInt(s,10)):0}
 function ksetm(i,v){document.getElementById(i).value=Math.max(Math.round(v),0).toLocaleString('pt-BR')}
 function kAd(d){ksetm('kCred',knm('kCred')+d);kCalc()}
 function cPct(p){ksetm('cEnt',knm('cCred')*p);cCalc()}
@@ -2020,16 +2607,101 @@ function pdfCotasComprar(){
   return h;
 }
 
+
+function pdfEscalonado(){
+  var v=function(i){return document.getElementById(i).value};
+  var h='';
+  h+='<div class="pdh"><h1>Case real</h1>'+
+     '<div class="sub">Cotas de consórcio contratadas de uma vez, com contemplação distribuída ao longo do tempo</div>'+
+     '<div class="dt">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div></div>';
+  h+=sec('Premissas utilizadas','<div class="pdg">'+
+      item('Valor dos imóveis','R$ '+v('zImov'))+
+      item('Valor de aquisição','R$ '+v('zCusto'))+
+      item('Ano da compra',v('zAno'))+
+      item('Prazo',v('zPz')+' meses')+
+      item('Redutor da parcela',v('zRed')+'%')+
+      item('Primeira contemplação','mês '+v('zIni'))+
+      item('Última contemplação','mês '+v('zFim'))+
+      item('Retorno considerado','IPCA + '+v('zRend').replace('.',',')+'% ao ano')+
+      item('Tributação do rendimento', zIsento?'papel isento de IR':'papel tributado em 15%')+
+     '</div>');
+  h+=sec('1. As cotas, contratadas de uma vez','<div class="pdg">'+
+      item('Crédito total',pv('za1'))+
+      item('Quantas cotas',pv('za2'),pv('za2b'))+
+      item('Parcela de cada uma',pv('za3'),pv('za3b'))+
+      item('Parcela somada no início',pv('za4'),'com o redutor',1)+
+     '</div>');
+  h+=sec('2. O esforço da família','<div class="pdg">'+
+      item('Lance próprio por cota',pv('zb1'))+
+      item('Lances no total',pv('zb2'))+
+      item('Parcelas antes do capital',pv('zb3'))+
+      item('Esforço total',pv('zb4'),pv('zb4b'),1)+
+     '</div>');
+  h+=sec('Os custos de passar os imóveis para a holding','<div class="pdg">'+
+      item('ITBI',pv('zq1'),pv('zq1b'))+
+      item('Imposto sobre o ganho',pv('zq2'),pv('zq2b'))+
+      item('Cartório e honorários',pv('zq3'))+
+      item('Total para transferir',pv('zq4'),pv('zq4b'),1)+
+     '</div>'+
+     '<div style="margin-top:9px;font-size:10.5px;color:#555;line-height:1.55">'+
+      document.getElementById('zqN').innerHTML.replace(/<[^>]+>/g,'')+'</div>');
+  h+=sec('3. O capital levantado','<div class="pdg">'+
+      item('Crédito líquido recebido',pv('zc1'))+
+      item('Impostos e custos',pv('zc2'),pv('zc2b'))+
+      item('Entra investido',pv('zc3'))+
+      item('Sobra ao fim do prazo',pv('zc4'),'em reais de hoje',1)+
+     '</div>');
+  h+=sec('A foto do mês '+v('zMes'),'<div class="pdg d2">'+
+      item('Cotas contempladas',pv('zm1'),pv('zm1b'))+
+      item('Parcela nesse mês',pv('zm2'),pv('zm2b'))+
+      item('Capital investido',pv('zm3'),pv('zm3b'))+
+      item('Rendimento do mês',pv('zm4'),pv('zm4b'))+
+     '</div>'+
+     '<div style="margin-top:9px;font-size:10.5px;color:#555;line-height:1.55">'+
+      document.getElementById('zmN').innerHTML.replace(/<[^>]+>/g,'')+'</div>');
+  h+=sec('O ponto de equilíbrio','<div class="pdg d2">'+
+      item('O capital precisa render',pv('ze1'),'acima do IPCA, na tabela')+
+      item('Retorno considerado aqui',pv('ze2'),pv('ze2b'))+
+      item('Margem',pv('ze3'),pv('ze3b'),1)+
+      item('Equilíbrio já líquido de IR',pv('ze4'))+
+     '</div>'+
+     '<div style="margin-top:9px;font-size:10.5px;color:#555;line-height:1.55">'+
+      document.getElementById('zeN').innerHTML.replace(/<[^>]+>/g,'')+'</div>');
+  var tb=document.querySelectorAll('#zTab tbody tr'), lin='';
+  for(var i=0;i<tb.length;i++){
+    var td=tb[i].querySelectorAll('td');
+    lin+='<tr><td>'+td[0].textContent+'</td><td>'+td[1].textContent+'</td><td>'+td[2].textContent+
+         '</td><td>'+td[3].textContent+'</td><td>'+td[4].textContent+'</td><td>'+td[5].textContent+
+         '</td><td>'+td[6].textContent+'</td></tr>';
+  }
+  h+=sec('Ano a ano, em reais de hoje',
+     '<table class="pdtab"><thead><tr><th>Ano</th><th>Mês</th><th>Contempladas</th><th>Parcela</th><th>Rendimento</th><th>Capital</th><th>Do bolso</th></tr></thead><tbody>'+lin+'</tbody></table>');
+  h+=sec('Resumo da operação','<div class="pdrot">'+document.getElementById('zRot').innerHTML+'</div>');
+  h+='<div class="pdnota">'+NOTA+'</div>';
+  return h;
+}
+
 function gerarPDF(){
   var d=document.getElementById('pdfDoc'), html='';
   var emCotas=document.getElementById('tCotas').classList.contains('on');
-  if(!emCotas) html=pdfHolding();
+  var emEsc=document.getElementById('tEsc').classList.contains('on');
+  if(emEsc) html=pdfEscalonado();
+  else if(!emCotas) html=pdfHolding();
   else html=document.getElementById('kVend').classList.contains('on')?pdfCotasVender():pdfCotasComprar();
   d.innerHTML=html;
   setTimeout(function(){window.print()},60);
 }
 
 kCalc(); cCalc();
+
+/* ---- listeners da aba Escalonado ---- */
+var ZIDS=['zImov','zCusto','zAno','zRend','zCpM','zNC','zPz','zRed','zIni','zInt','zFim','zMes',
+          'zEmb','zLan','zAdm','zFr','zItbi','zCart','zOut','zIrr','zReaj','zIpca'];
+var ZMASK=['zImov','zCusto'];
+ZIDS.forEach(function(i){var el=document.getElementById(i); if(!el)return;
+  if(ZMASK.indexOf(i)>=0) el.addEventListener('input',function(){mask(this);zCalc()});
+  else el.addEventListener('input',zCalc)});
+zCalc();
 
 </script>
 </body>
