@@ -583,6 +583,28 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
         </div>
 
         <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag new">em julgamento</span><span class="q">O Supremo pode acabar com o ITBI mesmo para holding de aluguel, mas o julgamento voltou à estaca zero</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> existe uma discussão no Supremo sobre se a isenção de ITBI na integralização vale sempre, inclusive para empresa que vive de imóvel. O relator propôs que sim, e o placar chegou a 4 votos a 1 a favor do contribuinte. Aí um ministro pediu destaque.</p>
+            <p><b>O que é pedir destaque:</b> é uma manobra de processo, não é voto contra. Ela tira o caso do julgamento eletrônico e leva para a sessão presencial. O efeito prático é que os votos já dados perdem a validade e tudo recomeça do zero, com os ministros votando de novo. Não há data marcada.</p>
+            <p><b>Enquanto isso:</b> os municípios continuam cobrando normalmente de quem tem receita de aluguel. Quem integraliza hoje e paga o ITBI pode pedir de volta depois, se o Supremo decidir a favor, desde que o pedido esteja dentro do prazo de cinco anos. Quem não pagar e perder, paga com multa e juros.</p>
+            <p><b>Do outro lado, uma vitória já valendo:</b> em maio de 2026 o Tribunal de Justiça de São Paulo fixou que não cabe ITBI quando a empresa está inativa ou sem receita nenhuma no período de apuração. Vale para os juízes do estado inteiro. Para holding puramente sucessória, isso é chão firme.</p>
+            <p class="ref"><b>A regra:</b> STF, Tema 1348 de repercussão geral, RE 1.495.108, relator min. Edson Fachin, julgamento virtual interrompido por pedido de destaque do min. Flávio Dino, sem data de retomada. TJ-SP, IRDR 2386871-86.2024, tese firmada em 02/05/2026.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
+          <div class="lt"><span class="tag warn">o ponto sensível</span><span class="q">Vender o imóvel para uma holding dos filhos pode ser lido como doação disfarçada</span><span class="ar">▾</span></div>
+          <div class="lb">
+            <p><b>Em português:</b> uma ideia que aparece muito é o pai vender os imóveis para uma holding onde os filhos já são sócios, em vez de doar as quotas. Na aparência é compra e venda, paga só o ITBI e o ganho de capital, e escapa do imposto de doação. O problema é que o fisco olha o dinheiro.</p>
+            <p><b>O que denuncia:</b> se os filhos não tinham renda nem patrimônio para comprar, se o pagamento não saiu de verdade da conta deles, ou se o preço combinado está muito abaixo do valor real, a operação é requalificada como doação. Aí vem o imposto de doação sobre a diferença, mais multa, e o ITBI pago não volta.</p>
+            <p><b>E tem o Código Civil:</b> vender bem para descendente sem o consentimento expresso dos outros filhos e do cônjuge é anulável. Não é só risco fiscal, é risco de a venda cair na Justiça anos depois, quando o inventário abrir.</p>
+            <p><b>O caminho seguro:</b> se a intenção real é passar patrimônio, o instrumento certo é a doação de quotas com reserva de usufruto, pagando o imposto de doação. Fica mais caro no papel e muito mais barato no risco.</p>
+            <p class="ref"><b>A regra:</b> Código Civil art. 496, venda a descendente exige anuência dos demais descendentes e do cônjuge. CTN art. 116, parágrafo único, e art. 149, VII, dolo ou simulação. Constituição art. 155, I, e legislação estadual: doação disfarçada atrai o ITCMD sobre a liberalidade, com multa.</p>
+          </div>
+        </div>
+
+        <div class="lc" onclick="lt(this)">
           <div class="lt"><span class="tag new">janela aberta</span><span class="q">Alugar pela holding ficou mais barato até 2028</span><span class="ar">▾</span></div>
           <div class="lb">
             <p><b>Em português:</b> aluguel recebido na pessoa física paga até 27,5% de imposto de renda. Na holding, no lucro presumido, fica entre 11% e 15%. Isso já era vantagem, e a reforma tributária melhorou ela por alguns anos.</p>
@@ -1010,6 +1032,7 @@ function calc(){
   var tx=n('vTx')/100, red=n('vRed')/100, idx=n('vIdx')/100;
   var pz=Math.max(Math.round(n('vPz')),2), mc=Math.round(n('vMc'));
   if(mc<1)mc=1; if(mc>=pz)mc=pz-1;
+  if(Math.round(n('vMc'))!==mc)document.getElementById('vMc').value=mc;
   var adm=n('vAdm')/100,fr=n('vFr')/100,pe=n('vEmb')/100,pl=n('vLan')/100;
   var ITBI=n('vItbi')/100,CART=n('vCart')/100,IRR=n('vIrr')/100;
   var mes=Math.min(Math.max(Math.round(n('vMes')),1),pz);
@@ -1271,7 +1294,11 @@ function calc(){
   document.querySelector('.tl').style.display = integra ? 'none' : 'block';
   document.getElementById('rot').innerHTML= integra ?
     ('Os imóveis entram na holding como capital, no valor de <b>'+m(capital)+'</b>. '+
-     (itbi>0?'O ITBI é devido e fica em <b>'+m(itbi)+'</b>. ':'Não há ITBI a pagar. ')+
+     (itbi>0
+        ? (FAT
+           ? 'Como a holding vai ter receita de aluguel, o ITBI é devido cheio e fica em <b>'+m(itbi)+'</b>. '
+           : 'A imunidade cobre o valor integralizado, mas sobram <b>'+m(excedente)+'</b> acima do capital social, e sobre esse excedente o município cobra ITBI de <b>'+m(itbi)+'</b>. ')
+        : 'Não há ITBI a pagar. ')+
      (ir>0?'O ganho de capital apurado é de <b>'+m(ir)+'</b>. ':'Não há ganho de capital, porque a integralização é pelo valor da declaração. ')+
      'Somando o cartório, o custo total para transferir é de <b>'+m(custos)+'</b>, ou '+pc(custos/V*100,2)+' do valor dos imóveis. '+
      (DOA!=='nao' ? 'Na doação das quotas aos herdeiros, o ITCMD fica em <b>'+m(DOA==='usuf'?itcmd(capital)*(2/3):itcmd(capital))+'</b>'+(DOA==='usuf'?' agora, mais um terço quando a propriedade se consolidar.':'.') : 'Não há venda, então nenhum dinheiro entra para o dono nesta operação.')) :
@@ -1545,7 +1572,9 @@ function pdfHolding(){
   var v=function(i){return document.getElementById(i).value};
   var h='';
   h+='<div class="pdh"><h1>Imóveis para a Holding</h1>'+
-     '<div class="sub">Simulação de transferência de imóveis para holding com carta de consórcio contemplada</div>'+
+     '<div class="sub">'+(ROTA==='integra'
+        ? 'Simulação de integralização de imóveis no capital de holding patrimonial'
+        : 'Simulação de transferência de imóveis para holding com carta de consórcio contemplada')+'</div>'+
      '<div class="dt">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div></div>';
   h+=sec('Premissas utilizadas','<div class="pdg">'+
       item('Valor dos imóveis','R$ '+v('vImov'))+
@@ -1558,13 +1587,13 @@ function pdfHolding(){
       item('Reajuste anual',v('vIdx').replace('.',',')+'% (INCC)')+
       item('Taxa administrativa',v('vAdm').replace('.',',')+'% + '+v('vFr').replace('.',',')+'% de fundo')+
      '</div>');
-  h+=sec('1. O que entra no início','<div class="pdg">'+
+  if(ROTA!=='integra') h+=sec('1. O que entra no início','<div class="pdg">'+
       item('Lance, do próprio bolso',pv('a1'),'',1)+
       item('Parcela mensal',pv('a2'),pv('a2b'))+
       item('Total até a carta cair',pv('a3'))+
      '</div>');
-  h+=sec('2. O imóvel entra na holding','<div class="pdg">'+
-      item('A holding paga',pv('b1'))+
+  h+=sec(ROTA==='integra'?'Os imóveis entram na holding':'2. O imóvel entra na holding','<div class="pdg">'+
+      item(ROTA==='integra'?'Valor dos imóveis':'A holding paga',pv('b1'))+
       item('Imposto, ITBI e cartório',pv('b2'))+
       item('Líquido para o vendedor',pv('b3'),'',1)+
      '</div>'+
@@ -1576,12 +1605,36 @@ function pdfHolding(){
       linha('ITBI',pv('x25'))+
       linha('Cartório e registro',pv('x26'))+
      '</div>');
-  h+=sec('3. O capital investido','<div class="pdg">'+
+  h+=sec('Cenário tributário considerado','<div class="pdg">'+
+      item('Forma de transferência', ROTA==='integra'?'Integralização de capital':'Compra e venda')+
+      (ROTA==='integra'?item('Receita de aluguel na holding', FAT?'sim, vai alugar':'não, só sucessória'):'')+
+      (ROTA==='integra'?item('Valor da integralização', VALINT==='hist'?'custo histórico':'valor de mercado'):'')+
+     '</div>'+
+     '<div class="pdg" style="margin-top:10px">'+
+      item('ITBI',pv('q1'),pv('q1b'))+
+      item('Imposto sobre o ganho',pv('q2'),pv('q2b'))+
+      item('Cartório e registro',pv('q3'))+
+     '</div>'+
+     '<div class="pdg d2" style="margin-top:10px">'+
+      item('Total para transferir',pv('q4'),pv('q4b'),1)+
+     '</div>'+
+     '<div style="margin-top:9px;font-size:10.5px;color:#555;line-height:1.55">'+
+      document.getElementById('tribN').innerHTML.replace(/<b>/g,'').replace(/<\/b>/g,'')+'</div>');
+  if(DOA!=='nao'){
+    h+=sec('Sucessão: ITCMD sobre as quotas','<div class="pdg">'+
+      item('Base de cálculo',pv('u1'),pv('u1b'))+
+      item('Alíquota efetiva',pv('u2'))+
+      item(pv('u3k'),pv('u3'),pv('u3b'),1)+
+     '</div>'+
+     '<div style="margin-top:9px;font-size:10.5px;color:#555;line-height:1.55">'+
+      document.getElementById('sucN').innerHTML.replace(/<b>/g,'').replace(/<\/b>/g,'')+'</div>');
+  }
+  if(ROTA!=='integra') h+=sec('3. O capital investido','<div class="pdg">'+
       item('Rende por mês',pv('c1'))+
       item('Parcela do consórcio',pv('c2'),pv('c2b'))+
       item('Sobra por mês',pv('c3'),'',1)+
      '</div>');
-  h+=sec('Ao longo do consórcio','<div class="pdg d2">'+
+  if(ROTA!=='integra') h+=sec('Ao longo do consórcio','<div class="pdg d2">'+
       item('Parcela no mês '+v('vMes'),pv('w1'),pv('w1b'))+
       item('Capital nesse mês',pv('w2'),pv('w2b'))+
       item('Total pago no consórcio',pv('w3'),'com todos os reajustes')+
