@@ -18,7 +18,26 @@ header .s{color:#7d8699;font-size:14px;margin-top:3px}
 .grid>*,.two>*,.three>*,.jr>*,.jr2>*,.acols>*,.tlg>*,.mkt>*,.rg>*{min-width:0}
 .panel,.mo,.tl,.lg,.rot{min-width:0}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
-.panel{background:#131824;border:1px solid #1e2536;border-radius:16px;padding:20px;position:sticky;top:20px}
+.panel{background:#131824;border:1px solid #1e2536;border-radius:16px;padding:20px;position:sticky;top:20px;
+  /* o painel rola por dentro: dá pra ver o fim dele sem rolar a página toda */
+  max-height:calc(100vh - 40px);overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:#2f3a56 transparent}
+.panel::-webkit-scrollbar{width:9px}
+.panel::-webkit-scrollbar-track{background:transparent}
+.panel::-webkit-scrollbar-thumb{background:#2f3a56;border-radius:9px;border:2px solid #131824}
+.panel::-webkit-scrollbar-thumb:hover{background:#3f4d70}
+/* sombra no topo e no rodapé pra sinalizar que ainda tem conteúdo */
+.panel{background-image:
+    linear-gradient(#131824 30%,rgba(19,24,36,0)),
+    linear-gradient(rgba(19,24,36,0),#131824 70%),
+    radial-gradient(farthest-side at 50% 0,rgba(0,0,0,.5),rgba(0,0,0,0)),
+    radial-gradient(farthest-side at 50% 100%,rgba(0,0,0,.5),rgba(0,0,0,0));
+  background-position:0 0,0 100%,0 0,0 100%;
+  background-repeat:no-repeat;
+  background-size:100% 34px,100% 34px,100% 11px,100% 11px;
+  background-attachment:local,local,scroll,scroll}
+/* em uma coluna o painel deixa de ser grudento e de rolar sozinho */
+@media(max-width:900px){.panel{position:static;max-height:none;overflow:visible;background-image:none}}
 .panel h2{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5c6478;margin-bottom:14px}
 label{display:block;font-size:12px;color:#8b93a7;margin-bottom:5px}
 .f{margin-bottom:14px}
@@ -265,7 +284,8 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
   .hero .rgt{gap:20px}
   .hero .rgt .v{font-size:17px}
   .hero .lb{font-size:12px;margin-top:5px}
-  .panel{position:static;padding:16px}
+  /* no celular o painel volta a ser bloco normal: nada de rolagem interna */
+  .panel{position:static;padding:16px;max-height:none;overflow:visible;background-image:none}
   .grid{gap:14px}
   .three{grid-template-columns:1fr 1fr}
   .mo,.tl,.lg,.rot{padding:16px}
