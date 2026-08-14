@@ -27,6 +27,22 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 .f.main input{font-size:23px;font-weight:650;color:#e8b34b;padding:13px 12px;text-align:center}
 .hint{font-size:11px;color:#5c6478;margin-top:4px;line-height:1.45}
+/* bolinha de informacao + balao */
+.ib{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
+    border:1px solid #3a4666;color:#8b93a7;font-size:10px;font-weight:700;font-style:italic;
+    cursor:pointer;vertical-align:middle;margin-left:5px;line-height:1;user-select:none;transition:.12s}
+.ib:hover,.ib:focus{background:#e8b34b;border-color:#e8b34b;color:#0b0e14;outline:none}
+.ib.on{background:#e8b34b;border-color:#e8b34b;color:#0b0e14}
+#tt{position:fixed;z-index:200;max-width:330px;max-height:calc(100vh - 20px);overflow-y:auto;
+    background:#161c29;border:1px solid #3a4666;border-radius:11px;
+    padding:13px 15px;font-size:12px;line-height:1.6;color:#c9d0de;box-shadow:0 14px 40px rgba(0,0,0,.6);display:none}
+#tt.on{display:block}
+#tt .tth{font-size:12.5px;font-weight:700;color:#e8b34b;margin-bottom:7px;line-height:1.35}
+#tt b{color:#e6e9f0}
+#tt .ttr{margin-top:9px;padding-top:8px;border-top:1px solid #232c40;font-size:10.5px;color:#6f7789;line-height:1.5}
+#tt .ttx{position:absolute;top:7px;right:9px;color:#5c6478;cursor:pointer;font-size:15px;line-height:1}
+#tt .ttx:hover{color:#e6e9f0}
+@media(max-width:820px){#tt{max-width:calc(100vw - 28px)}}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .steps{display:flex;gap:5px;margin-bottom:14px}
@@ -314,7 +330,7 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 
     <h3 style="margin-top:15px">Cenário tributário</h3>
     <div class="f">
-      <label>Como os imóveis entram na holding</label>
+      <label>Como os imóveis entram na holding <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="rota">i</span></label>
       <div class="idx" style="grid-template-columns:1fr 1fr">
         <button id="rC" class="on" onclick="setRota('compra')">Compra e venda</button>
         <button id="rI" onclick="setRota('integra')">Integralização</button>
@@ -323,7 +339,7 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
     </div>
     <div id="boxInt" style="display:none">
       <div class="f">
-        <label>A holding vai ter receita de aluguel</label>
+        <label>A holding vai ter receita de aluguel <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="fat">i</span></label>
         <div class="idx" style="grid-template-columns:1fr 1fr">
           <button id="fN" class="on" onclick="setFat(0)">Não, só sucessória</button>
           <button id="fS" onclick="setFat(1)">Sim, vai alugar</button>
@@ -331,16 +347,24 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
         <div class="hint" id="hFat"></div>
       </div>
       <div class="f">
-        <label>Integraliza por qual valor</label>
+        <label>Integraliza por qual valor <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="val">i</span></label>
         <div class="idx" style="grid-template-columns:1fr 1fr">
           <button id="vH" class="on" onclick="setVal('hist')">Custo histórico</button>
           <button id="vM" onclick="setVal('merc')">Valor de mercado</button>
         </div>
         <div class="hint" id="hVal"></div>
       </div>
+      <div class="f">
+        <label>Destino do valor conferido <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="dest">i</span></label>
+        <div class="idx" style="grid-template-columns:1fr 1fr">
+          <button id="eT" class="on" onclick="setDest('tudo')">Tudo em capital social</button>
+          <button id="eR" onclick="setDest('reserva')">Parte em reserva</button>
+        </div>
+        <div class="hint" id="hDest"></div>
+      </div>
     </div>
     <div class="f">
-      <label>Doação das quotas aos herdeiros</label>
+      <label>Doação das quotas aos herdeiros <span class="ib" tabindex="0" onclick="ttg(this,event)" data-tt="doa">i</span></label>
       <div class="idx" style="grid-template-columns:1fr 1fr 1fr">
         <button id="dN" class="on" onclick="setDoa('nao')">Não simular</button>
         <button id="dC" onclick="setDoa('cheia')">Doação cheia</button>
@@ -514,13 +538,13 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 
     <div class="tl" id="cardSuc" style="display:none">
       <div class="th">
-        <div><div class="tt">Sucessão: o ITCMD das quotas</div><div class="st">São Paulo, progressivo de 2% a 8% desde janeiro de 2026</div></div>
+        <div><div class="tt">Sucessão: o ITCMD das quotas</div><div class="st">São Paulo cobra 4% fixo hoje, e há duas mudanças a caminho</div></div>
       </div>
       <div class="tlg">
         <div class="tc"><div class="k">Base de cálculo</div><div class="v bl" id="u1">R$ 0</div><div class="s" id="u1b"></div></div>
-        <div class="tc"><div class="k">Alíquota efetiva</div><div class="v" id="u2">0%</div><div class="s">média sobre a base</div></div>
+        <div class="tc"><div class="k">Alíquota</div><div class="v" id="u2">4% fixo</div><div class="s">Lei 10.705/2000, art. 16</div></div>
         <div class="tc"><div class="k" id="u3k">Paga na doação</div><div class="v rd" id="u3">R$ 0</div><div class="s" id="u3b"></div></div>
-        <div class="tc"><div class="k">Economia da escolha</div><div class="v g" id="u4">R$ 0</div><div class="s" id="u4b"></div></div>
+        <div class="tc"><div class="k" id="u4k">O que a janela vale</div><div class="v g" id="u4">R$ 0</div><div class="s" id="u4b"></div></div>
       </div>
       <div class="note" id="sucN"></div>
     </div>
@@ -547,12 +571,15 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
         </div>
 
         <div class="lc" onclick="lt(this)">
-          <div class="lt"><span class="tag warn">cuidado</span><span class="q">O ITBI é isento na integralização, mas só até o valor do capital social</span><span class="ar">▾</span></div>
+          <div class="lt"><span class="tag ok">o ponto mais mal explicado do mercado</span><span class="q">O ITBI da integralização depende do contrato social, não do valor que a prefeitura acha</span><span class="ar">▾</span></div>
           <div class="lb">
-            <p><b>Em português:</b> a Constituição isenta de ITBI o imóvel que entra numa empresa como capital. Só que o Supremo decidiu que essa isenção vale até o valor que você declarou como capital. Se o imóvel vale 1 milhão e você integraliza por 500 mil, muitos municípios cobram ITBI sobre os 500 mil de diferença.</p>
-            <p><b>O que fazer:</b> integralizar pelo valor de mercado elimina esse risco de ITBI, mas aí você paga imposto de ganho de capital. É escolher qual dos dois pagar. Vale checar como a prefeitura da cidade dos imóveis vem aplicando isso na prática, porque varia bastante.</p>
-            <p><b>Atenção:</b> se a operação for compra e venda, como nesta simulação, não existe isenção nenhuma. O ITBI é devido cheio.</p>
-            <p class="ref"><b>A regra:</b> CF art. 156, §2º, I. STF, Tema 796 de repercussão geral, tese reafirmada em decisão de 30/03/2026: "a imunidade em relação ao ITBI não alcança o valor dos bens que exceder o limite do capital social a ser integralizado".</p>
+            <p><b>Em português:</b> a Constituição dá imunidade de ITBI ao imóvel que entra numa empresa como capital. O Supremo, no Tema 796, disse que essa imunidade <b>não alcança o que exceder o capital social</b>. Só que quase todo mundo entende esse "excedente" errado.</p>
+            <p><b>O que é o excedente de verdade:</b> quando o imóvel entra na empresa, o valor dele precisa ir para algum lugar no balanço. Pode ir <b>todo para o capital social</b>, ou parte para o capital e o resto para <b>reserva de capital</b>. O excedente do Tema 796 é essa parte que foi para reserva. É <b>excedente societário</b>, está escrito no contrato social, e você controla ele.</p>
+            <p><b>O caso que o Supremo julgou deixa isso claro:</b> os sócios conferiram imóveis avaliados em cerca de R$ 802 mil e registraram apenas R$ 24 mil de capital social. Os outros R$ 778 mil foram para reserva. Foi sobre esses R$ 778 mil que o município pôde cobrar.</p>
+            <p><b>A consequência prática:</b> se você confere o imóvel por R$ 500 mil e aumenta o capital social em exatamente R$ 500 mil, <b>não existe excedente e não há ITBI</b>, ainda que a prefeitura ache que o imóvel vale 1 milhão. O excedente não é diferença de avaliação.</p>
+            <p><b>O que sobra de risco:</b> o município pode discordar do <b>valor</b> e tentar arbitrar outro. Isso é briga de base de cálculo, não de imunidade, e ele precisa abrir processo administrativo com direito de defesa. O valor que você declarou tem presunção a favor. Atenção: a LC 227 de 2026 mexeu justamente aí, autorizando os municípios a estimarem valor venal por critérios técnicos divulgados. A briga migrou de lugar.</p>
+            <p><b>Se a operação for compra e venda</b>, nada disso se aplica. Não existe imunidade nenhuma e o ITBI é devido cheio.</p>
+            <p class="ref"><b>A regra:</b> CF art. 156, §2º, I. STF, Tema 796 (RE 796.376): "a imunidade em relação ao ITBI não alcança o valor dos bens que exceder o limite do capital social a ser integralizado". STJ, Tema 1113, sobre presunção do valor declarado e vedação a valor de referência unilateral. CTN art. 148 (arbitramento com contraditório) e art. 38, na redação da LC 227/2026.</p>
           </div>
         </div>
 
@@ -619,12 +646,14 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
         </div>
 
         <div class="lc" onclick="lt(this)">
-          <div class="lt"><span class="tag warn">mudou agora</span><span class="q">Passar as quotas para os filhos ficou mais caro em São Paulo</span><span class="ar">▾</span></div>
+          <div class="lt"><span class="tag new">janela aberta</span><span class="q">Doar as quotas ainda custa 4% em São Paulo, e isso tem prazo</span><span class="ar">▾</span></div>
           <div class="lb">
-            <p><b>Em português:</b> o imposto de doação e herança em São Paulo era 4% para todo mundo. Desde janeiro de 2026 ele virou progressivo e vai de 2% a 8%, conforme o tamanho do patrimônio. Para patrimônio grande, praticamente dobrou.</p>
-            <p><b>Por que importa:</b> colocar os imóveis na holding é só a primeira metade do planejamento. A segunda é doar as quotas para os herdeiros, normalmente guardando o usufruto, que é o direito de continuar recebendo a renda e mandando nas decisões. É nessa doação que o imposto incide.</p>
-            <p><b>O que avaliar:</b> se a doação for acontecer de qualquer jeito, adiantar tem valor quando o patrimônio tende a valorizar, porque o imposto é calculado sobre o valor de hoje. Vale montar essa conta separada, com o contador.</p>
-            <p class="ref"><b>A regra:</b> LC 227 e legislação estadual de SP, vigência janeiro de 2026. Faixas em UFESP: até 10 mil 2%, de 10 mil a 85 mil 4%, de 85 mil a 280 mil 6%, de 280 mil a 500 mil 7%, acima de 500 mil 8%. A faixa de 8% começa perto de R$ 18,8 milhões.</p>
+            <p><b>Em português:</b> o imposto de doação e herança em São Paulo é <b>4% fixo</b>, e continua sendo. Muito material na internet afirma que já virou progressivo de 2% a 8% em janeiro de 2026. <b>Não virou.</b> A alíquota está no artigo 16 da Lei estadual 10.705/2000 e não foi alterada.</p>
+            <p><b>O que confunde:</b> a reforma tributária tornou a progressividade obrigatória para todos os estados, com teto de 8%, e a LC 227 de 2026 é federal. Mas quem fixa alíquota de ITCMD é lei estadual, e São Paulo ainda não aprovou a dele. Existem dois projetos na Assembleia em direções opostas: o PL 7/2024 propõe 2% a 8%, e o PL 409/2025 propõe 1% a 4%. Nenhum dos dois foi aprovado.</p>
+            <p><b>A segunda mudança, essa mais séria:</b> a LC 227 alterou a base de cálculo das quotas de empresa que não é de bolsa. Sai o valor contábil e entra o patrimônio líquido <b>ajustado a valor de mercado</b>, mais fundo de comércio. Traduzindo: a economia de integralizar pelo custo histórico, que hoje derruba a base do ITCMD, <b>deixa de existir</b>. O imóvel volta a ser contado pelo que vale.</p>
+            <p><b>Quando isso vale:</b> as duas dependem de lei estadual, e lei estadual de imposto respeita anterioridade anual e os 90 dias. Na prática, <b>2027</b>. Quem vai doar quota de holding e pode antecipar para 2026 pega alíquota de 4% sobre base contábil. Depois pode ser alíquota maior sobre base de mercado, que é encarecer dos dois lados.</p>
+            <p><b>O que avaliar:</b> vale montar essa conta com o contador antes do fim do ano. Mas nunca antecipar doação só por imposto: o pai perde patrimônio do nome dele, e isso mexe em divórcio, em credor e em briga de família. O usufruto resolve boa parte, e não resolve tudo.</p>
+            <p class="ref"><b>A regra:</b> Lei estadual SP 10.705/2000, arts. 9º, 16 e 31, alíquota de 4% confirmada em resposta a consulta da Sefaz-SP de 2026. LC 227/2026, art. 154, II, base de cálculo de participações societárias. EC 132/2023, progressividade obrigatória. PL 7/2024 e PL 409/2025 em tramitação na Alesp.</p>
           </div>
         </div>
 
@@ -933,8 +962,83 @@ input:focus{outline:none;border-color:#e8b34b;background:#0f1420}
 </div>
 
 <div id="pdfDoc"></div>
+<div id="tt"><span class="ttx" onclick="ttc()">×</span><div id="ttb"></div></div>
 
 <script>
+/* ================= BALOES DE EXPLICACAO ================= */
+var TT={
+ rota:{t:'Compra e venda ou integralização, e por que muda tudo',
+  b:'São <b>duas operações jurídicas diferentes</b>, não duas formas de fazer a mesma coisa.<br><br>'+
+    'Na <b>integralização</b>, o dono entrega o imóvel para a própria empresa e recebe quotas em troca. Não é venda: ninguém paga nada a ninguém, e por isso a Constituição dá <b>imunidade de ITBI</b>. Custa quase nada, mas não gera dinheiro nenhum no bolso.<br><br>'+
+    'Na <b>compra e venda</b>, a holding compra o imóvel e paga por ele. É operação onerosa, então <b>não existe imunidade nenhuma</b>: paga ITBI cheio e o vendedor apura ganho de capital. Em troca, o dono recebe o dinheiro e pode investir.<br><br>'+
+    'Escolher entre as duas é escolher entre <b>guardar patrimônio barato</b> e <b>transformar tijolo em capital com liquidez</b>. Não existe uma que seja melhor sempre.',
+  r:'Constituição, art. 156, §2º, I. Lei 9.249/1995, art. 23.'},
+
+ fat:{t:'Por que o aluguel derruba a imunidade do ITBI',
+  b:'A imunidade de ITBI na integralização tem uma exceção na própria Constituição: <b>não vale para empresa cuja atividade principal é comprar, vender, alugar ou arrendar imóvel.</b> É o que a lei chama de <b>atividade preponderante</b>.<br><br>'+
+    'Preponderante é quando <b>mais da metade da receita</b> vem de imóvel. O município olha os <b>2 anos antes e os 2 depois</b> da operação. Se a empresa tem menos de 2 anos de vida, olha os <b>3 anos seguintes</b>. Ou seja, o risco não fecha no dia da abertura, fica em aberto por alguns anos.<br><br>'+
+    '<b>Holding só sucessória, sem receita nenhuma, não tem preponderância.</b> O Tribunal de Justiça de São Paulo firmou isso em maio de 2026 num julgamento que vincula todos os juízes do estado.<br><br>'+
+    'E existe uma discussão maior no Supremo, o Tema 1348, sobre acabar com essa exceção de vez. O placar chegou a 4 a 1 a favor do contribuinte, mas um ministro pediu destaque, <b>os votos perderam o efeito e o julgamento recomeça do zero</b>. Sem data. Enquanto isso, os municípios continuam cobrando.',
+  r:'CTN, art. 37. TJ-SP, IRDR 2386871-86.2024, tese de 02/05/2026. STF, Tema 1348 (RE 1.495.108), suspenso por destaque.'},
+
+ val:{t:'Custo histórico ou valor de mercado: a escolha que a lei dá',
+  b:'A lei deixa você escolher por quanto o imóvel entra na empresa, e a escolha é sua. <b>Isso não é brecha nem subdeclaração</b>, está escrito no artigo 23 da Lei 9.249/95.<br><br>'+
+    '<b>Custo histórico</b> é o valor que está na declaração de imposto de renda, o que foi pago na época. Como não há diferença entre o que saiu e o que entrou, <b>não há ganho de capital e não há imposto agora</b>. Em compensação a empresa fica com o imóvel registrado barato, e no dia em que ela vender o lucro será grande. Você adiou o imposto, não eliminou.<br><br>'+
+    '<b>Valor de mercado</b> é quanto o imóvel vale hoje. Você paga o ganho de capital agora, mas a empresa passa a ter um custo de aquisição alto, o que reduz o imposto numa venda futura.<br><br>'+
+    'Regra prática: quem <b>não pretende vender</b> escolhe o custo histórico. Quem <b>vai vender em breve</b> pode preferir o valor de mercado.',
+  r:'Lei 9.249/1995, art. 23. Lei 11.196/2005, art. 40 (redutores por tempo de posse).'},
+
+ dest:{t:'O detalhe que decide se vai ter ITBI ou não',
+  b:'Aqui está o ponto que quase todo mundo entende errado, inclusive muita gente que vende holding.<br><br>'+
+    'Quando o imóvel entra na empresa, o valor dele precisa ir para algum lugar no balanço. Ele pode ir <b>todo para o capital social</b>, ou pode ir <b>uma parte para o capital e o resto para reserva de capital</b>.<br><br>'+
+    'O Supremo decidiu, no Tema 796, que <b>a imunidade cobre o que virou capital social, e não cobre o que foi para reserva</b>. No caso julgado, os sócios conferiram imóveis de R$ 802 mil e registraram só R$ 24 mil de capital social. O resto foi para reserva, e sobre esse resto o município pôde cobrar ITBI.<br><br>'+
+    '<b>Se tudo o que foi conferido virar capital social, não sobra excedente e não há ITBI a pagar.</b> O excedente do Tema 796 é <b>societário</b>, está no contrato social, e não é a diferença entre o valor declarado e o valor que a prefeitura acha que o imóvel vale.<br><br>'+
+    'O que o município ainda pode fazer é <b>discordar do valor</b>. Mas aí ele precisa abrir processo administrativo com direito de defesa, e o valor que você declarou tem presunção a favor. É outra briga, sobre base de cálculo, não sobre imunidade.',
+  r:'STF, Tema 796 (RE 796.376). STJ, Tema 1113. CTN, art. 148. LC 227/2026, que alterou o art. 38 do CTN.'},
+
+ doa:{t:'ITCMD: o imposto de passar as quotas para os filhos',
+  b:'Colocar os imóveis na holding é só a primeira metade do planejamento. A segunda é <b>passar as quotas para os herdeiros</b>, e é aí que entra o ITCMD, o imposto de doação e herança.<br><br>'+
+    '<b>Em São Paulo a alíquota é 4% fixa</b>, pela Lei estadual 10.705/2000. Não é progressiva, apesar de muito material na internet dizer que já é.<br><br>'+
+    '<b>Doação cheia</b> é passar a propriedade inteira e pagar tudo de uma vez.<br><br>'+
+    '<b>Com usufruto</b>, o pai doa a nua-propriedade e guarda para si o direito de continuar recebendo a renda e mandando nas decisões. São Paulo deixa pagar <b>2/3 agora</b> e o outro terço só quando a propriedade se consolidar. <b>Atenção: isso não reduz o imposto, apenas adia um terço dele.</b> O ganho está no controle e no caixa, não no total pago.<br><br>'+
+    '<b>Duas mudanças vêm por aí, e as duas encarecem.</b> A reforma obriga São Paulo a adotar faixas progressivas com teto de 8%, e há projeto na Assembleia propondo 2% a 8%. E a LC 227/2026 mudou a base de cálculo das quotas de empresa fechada: sai o valor contábil e entra o <b>patrimônio líquido ajustado a valor de mercado</b>, mais fundo de comércio. As duas dependem de lei estadual e de anterioridade, o que na prática joga para 2027.',
+  r:'Lei estadual SP 10.705/2000, arts. 9º, 16 e 31. LC 227/2026, art. 154, II. PL 7/2024 e PL 409/2025, em tramitação na Alesp.'}
+};
+var ttAtual=null;
+function ttc(){var e=document.getElementById('tt');e.className='';
+  if(ttAtual){ttAtual.classList.remove('on');ttAtual=null}}
+function ttg(el,ev){
+  if(ev)ev.stopPropagation();
+  var k=el.getAttribute('data-tt'), d=TT[k];
+  if(!d)return;
+  if(ttAtual===el){ttc();return}
+  ttc();
+  var box=document.getElementById('tt');
+  document.getElementById('ttb').innerHTML='<div class="tth">'+d.t+'</div>'+d.b+'<div class="ttr">'+d.r+'</div>';
+  box.className='on';
+  el.classList.add('on'); ttAtual=el;
+  ttp();
+}
+/* posiciona perto da bolinha, sem sair da tela. Rolar a pagina reposiciona, nao fecha. */
+function ttp(){
+  if(!ttAtual)return;
+  var box=document.getElementById('tt');
+  var r=ttAtual.getBoundingClientRect(), b=box.getBoundingClientRect();
+  var vw=document.documentElement.clientWidth, vh=document.documentElement.clientHeight;
+  var x=r.left, y=r.bottom+8;
+  if(x+b.width>vw-10) x=Math.max(10,vw-b.width-10);
+  if(y+b.height>vh-10) y=Math.max(10,r.top-b.height-8);
+  box.style.left=Math.round(x)+'px'; box.style.top=Math.round(y)+'px';
+  /* se a bolinha saiu da tela, o balao vai junto */
+  if(r.bottom<0||r.top>vh) ttc();
+}
+document.addEventListener('click',function(e){
+  if(ttAtual && !e.target.closest('#tt') && !e.target.classList.contains('ib')) ttc();
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')ttc()});
+window.addEventListener('resize',ttc);
+window.addEventListener('scroll',ttp,true);
+
 var base='cre', acomp=true;
 var IDS=['vImov','vCusto','vAno','vTx','vRed','vMc','vIdx','vMes','vAdm','vFr','vPz','vEmb','vLan','vItbi','vCart','vIrr'];
 var MASK=['vImov','vCusto'];
@@ -1001,7 +1105,10 @@ function eng(V,adm,fr,red,mc,pz,pe,pl){
 // Porto: 1o reajuste no 14o mes, depois a cada 12
 function nre(t){return t<14?0:Math.floor((t-14)/12)+1}
 /* ===== cenario tributario ===== */
-var ROTA='compra', FAT=0, VALINT='hist', DOA='nao';
+var ROTA='compra', FAT=0, VALINT='hist', DOA='nao', DEST='tudo';
+function setDest(x){DEST=x;
+  document.getElementById('eT').className=(x==='tudo'?'on':'');
+  document.getElementById('eR').className=(x==='reserva'?'on':'');calc()}
 function setRota(r){ROTA=r;
   document.getElementById('rC').className=(r==='compra'?'on':'');
   document.getElementById('rI').className=(r==='integra'?'on':'');
@@ -1018,16 +1125,12 @@ function setDoa(d){DOA=d;
   document.getElementById('dC').className=(d==='cheia'?'on':'');
   document.getElementById('dU').className=(d==='usuf'?'on':'');calc()}
 
-/* ITCMD-SP progressivo (LC 227, vigencia jan/2026). UFESP calibrada p/ faixa de 8% ~ R$18,8M */
-var UFESP=37.60;
-function itcmd(v){
-  var f=[[10000*UFESP,.02],[85000*UFESP,.04],[280000*UFESP,.06],[500000*UFESP,.07],[Infinity,.08]];
-  var imp=0, ant=0;
-  for(var i=0;i<f.length;i++){
-    if(v>ant){imp+=(Math.min(v,f[i][0])-ant)*f[i][1]; ant=f[i][0];} else break;
-  }
-  return imp;
-}
+/* ITCMD-SP: 4% FIXO, Lei estadual 10.705/2000 art.16. Sao Paulo NAO tem progressividade em vigor.
+   Verificado em ago/2026 na Sefaz-SP. Tramitam o PL 7/2024 (2% a 8%) e o PL 409/2025 (1% a 4%),
+   nenhum aprovado. Se aprovado em 2026, so vale em 2027 pela anterioridade. */
+var ITCMD_SP=0.04;
+var UFESP=37.60, ISENTO=2500*UFESP;   /* doacao ate 2.500 UFESPs e isenta */
+function itcmd(v){ return v>ISENTO ? v*ITCMD_SP : 0 }
 
 function calc(){
   var V=nm('vImov'); if(V<=0)V=1;
@@ -1059,10 +1162,14 @@ function calc(){
   var integra = (ROTA==='integra');
   var aCusto  = integra && VALINT==='hist';
   var ir      = (integra && aCusto) ? 0 : irCheio;          /* art.23 Lei 9.249/95 */
-  var capital = aCusto ? custo : V;                          /* valor integralizado */
-  var excedente = integra ? Math.max(V-capital,0) : 0;       /* Tema 796 STF */
-  var itbiPrep = integra ? (FAT ? V*ITBI : 0) : V*ITBI;      /* preponderancia / compra e venda */
-  var itbiExc  = (integra && !FAT) ? excedente*ITBI : 0;     /* excedente ao capital, mesmo sem receita */
+  /* conferido = por quanto o imovel entra na sociedade (a escolha da Lei 9.249/95) */
+  var conferido = aCusto ? custo : V;
+  /* Tema 796: o excedente e SOCIETARIO, capital social x reserva de capital ou agio.
+     Se tudo o que foi conferido vira capital social, nao ha excedente e nao ha ITBI,
+     independentemente do valor venal que o municipio atribua ao imovel. */
+  var capital   = (integra && DEST==='reserva') ? custo : conferido;
+  var excedente = integra ? Math.max(conferido-capital,0) : 0;
+  var itbiExc  = (integra && !FAT) ? excedente*ITBI : 0;
   var itbi     = integra ? (FAT ? V*ITBI : itbiExc) : V*ITBI;
   var cart     = V*CART;
   var custos   = ir+itbi+cart;
@@ -1077,7 +1184,12 @@ function calc(){
     : 'Sem receita imobiliária não há preponderância. O TJ-SP firmou isso em maio de 2026 para empresa inativa ou sem faturamento.';
   document.getElementById('hVal').textContent = aCusto
     ? 'Pelo valor da declaração, sem ganho de capital. As quotas ficam valendo menos, o que reduz o ITCMD na doação.'
-    : 'Pelo valor de mercado, com ganho de capital agora. Em troca, não sobra excedente para o município cobrar ITBI.';
+    : 'Pelo valor de mercado, com ganho de capital agora. Em troca, o custo de aquisição da holding fica alto para uma venda futura.';
+  document.getElementById('hDest').textContent = DEST==='tudo'
+    ? 'Tudo o que foi conferido vira capital social. Sem reserva, não há excedente, e pelo Tema 796 não há ITBI a pagar.'
+    : (excedente>0
+       ? 'Parte vai para reserva de capital. É justamente sobre essa parte que o Tema 796 autoriza o município a cobrar ITBI.'
+       : 'Nesta configuração não sobra nada para reserva, porque o valor conferido já é igual ao capital social.');
   document.getElementById('hDoa').textContent =
     DOA==='nao' ? 'Ligue para ver quanto custaria passar as quotas aos herdeiros.'
     : DOA==='cheia' ? 'Doação da propriedade plena, ITCMD pago de uma vez.'
@@ -1133,7 +1245,7 @@ function calc(){
   var q1=document.getElementById('q1');
   q1.textContent=m(itbi); q1.className='v '+(itbi>0?'rd':'g');
   document.getElementById('q1b').textContent = integra
-    ? (FAT ? 'devido, atividade preponderante' : (itbiExc>0 ? 'só sobre o excedente ao capital' : 'imune'))
+    ? (FAT ? 'devido, atividade preponderante' : (itbiExc>0 ? 'só sobre o que foi para reserva' : 'imune, tudo virou capital social'))
     : 'devido, '+pc(ITBI*100,1)+' sobre o valor';
   var q2=document.getElementById('q2');
   q2.textContent=m(ir); q2.className='v '+(ir>0?'rd':'g');
@@ -1144,9 +1256,9 @@ function calc(){
   document.getElementById('q4b').textContent = V>0 ? pc(custos/V*100,2)+' do valor dos imóveis' : '';
   var nt='';
   if(integra && !FAT){
-    nt='Sem receita de aluguel não há atividade preponderante, então o ITBI é imune. O TJ-SP firmou isso em maio de 2026 no IRDR 2386871-86.2024, que vincula os juízes do estado. ';
-    if(itbiExc>0) nt+='<b>Mas atenção:</b> como você integraliza por '+m(capital)+' e os imóveis valem '+m(V)+', sobram '+m(excedente)+' acima do capital social. Pelo Tema 796 do STF, que já está decidido, o município pode cobrar ITBI sobre esse excedente. É o preço de integralizar barato.';
-    else nt+='Integralizando a valor de mercado não sobra excedente, então não há a cobrança do Tema 796.';
+    nt='Sem receita de aluguel não há atividade preponderante, então a imunidade de ITBI está de pé. O TJ-SP firmou isso em maio de 2026 no IRDR 2386871-86.2024, que vincula os juízes do estado. ';
+    if(itbiExc>0) nt+='<b>Mas atenção:</b> você conferiu '+m(conferido)+' e registrou só '+m(capital)+' como capital social. Os '+m(excedente)+' que foram para reserva ficam fora da imunidade, e é sobre eles que o Tema 796 autoriza a cobrança. <b>Levando tudo para capital social esse ITBI desaparece.</b>';
+    else nt+='Como todo o valor conferido virou capital social, <b>não existe excedente e não há ITBI a pagar</b>, mesmo que a prefeitura atribua ao imóvel um valor maior. O excedente do Tema 796 é societário, capital contra reserva, e não diferença de avaliação. O que o município ainda pode fazer é discordar do valor e arbitrar outro, mas aí precisa de processo administrativo com direito de defesa, e o valor que você declarou tem presunção a favor.';
   } else if(integra && FAT){
     nt='Com receita de aluguel acima de metade do faturamento o município cobra o ITBI. A apuração olha os dois anos anteriores e os dois posteriores, ou os três seguintes se a empresa tiver menos de dois anos. <b>O Tema 1348 do STF discute se a imunidade vale mesmo com atividade imobiliária:</b> o relator propôs que sim, o placar chegou a 4 a 1 a favor do contribuinte, mas o ministro Flávio Dino pediu destaque, os votos perderam efeito e o julgamento recomeça do zero, sem data. Hoje os municípios continuam cobrando.';
   } else {
@@ -1159,24 +1271,26 @@ function calc(){
   if(DOA==='nao'){ cs.style.display='none'; }
   else{
     cs.style.display='block';
-    var baseQ = integra ? capital : V;
+    var baseQ = integra ? conferido : V;   /* valor patrimonial das quotas hoje */
     var impT  = itcmd(baseQ);
     var agora = DOA==='usuf' ? impT*(2/3) : impT;
     var dif   = DOA==='usuf' ? impT*(1/3) : 0;
-    var alt   = itcmd(V);
+    var alt   = itcmd(V);                  /* como fica quando a base virar valor de mercado */
     document.getElementById('u1').textContent=m(baseQ);
     document.getElementById('u1b').textContent = (integra&&aCusto) ? 'valor integralizado, não o de mercado' : 'valor de mercado';
-    document.getElementById('u2').textContent = baseQ>0 ? pc(impT/baseQ*100,2) : '0%';
+    document.getElementById('u2').textContent = pc(ITCMD_SP*100,0)+' fixo';
     document.getElementById('u3k').textContent = DOA==='usuf' ? 'Paga agora, 2/3' : 'ITCMD na doação';
     document.getElementById('u3').textContent=m(agora);
     document.getElementById('u3b').textContent = DOA==='usuf' ? 'mais '+m(dif)+' quando consolidar' : 'de uma vez';
     var eco=Math.max(alt-impT,0);
     document.getElementById('u4').textContent=m(eco);
-    document.getElementById('u4b').textContent = eco>0 ? 'por integralizar pelo custo' : 'base já é o valor de mercado';
+    document.getElementById('u4k').textContent = eco>0 ? 'O que a janela vale' : 'Exposição à mudança';
+    document.getElementById('u4b').textContent = eco>0 ? 'se a base virar valor de mercado' : 'a base já é o valor de mercado';
     var sn='';
-    if(integra&&aCusto) sn='Como as quotas foram integralizadas por '+m(capital)+', o ITCMD incide sobre esse valor e não sobre os '+m(V)+' de mercado. A economia é de <b>'+m(eco)+'</b>. Isso não é subdeclarar: o artigo 23 da Lei 9.249/95 dá expressamente a escolha entre o valor da declaração e o de mercado.';
-    else sn='A base é o valor de mercado das quotas. Integralizando pelo custo histórico a base cairia para '+m(integra?custo:custo)+' e o imposto para '+m(itcmd(custo))+'.';
+    if(integra&&aCusto) sn='As quotas valem hoje <b>'+m(conferido)+'</b> no patrimônio da empresa, e é sobre esse valor que o ITCMD incide, não sobre os '+m(V)+' de mercado. Isso não é subdeclarar: o artigo 23 da Lei 9.249/95 dá expressamente a escolha entre o valor da declaração e o de mercado.';
+    else sn='A base é o valor de mercado das quotas. Integralizando pelo custo histórico a base cairia para '+m(custo)+' e o imposto para '+m(itcmd(custo))+'.';
     if(DOA==='usuf') sn+=' Com reserva de usufruto, São Paulo deixa pagar 2/3 na doação e adiar 1/3 para quando a propriedade se consolidar, corrigido pela UFESP. <b>O usufruto não reduz o imposto total, ele difere um terço</b> e mantém o doador no controle e recebendo a renda.';
+    sn+=' <b>Duas mudanças estão a caminho e as duas pesam contra esperar.</b> A alíquota de São Paulo é <b>'+pc(ITCMD_SP*100,0)+' fixa</b> hoje, mas a reforma obriga o estado a adotar faixas progressivas com teto de 8%, e há projeto na Assembleia propondo justamente 2% a 8%. E a LC 227/2026 mudou a base de cálculo das quotas de empresa fechada para o patrimônio líquido <b>ajustado a valor de mercado</b>, mais fundo de comércio, o que sozinho levaria a base de '+m(baseQ)+' para perto de '+m(V)+(eco>0?', um aumento de <b>'+m(eco)+'</b> de imposto':'')+'. As duas dependem de lei estadual e de anterioridade, então na prática valem a partir de 2027.';
     document.getElementById('sucN').innerHTML=sn;
   }
 
@@ -1267,8 +1381,8 @@ function calc(){
       + (FAT
         ? 'Como a holding vai ter receita de aluguel, a preponderância derruba a imunidade e o ITBI é devido cheio.'
         : (excedente>0
-          ? 'O ITBI aqui não é cheio: a imunidade cobre o capital integralizado e a cobrança recai só sobre os '+m(excedente)+' que excedem, pelo Tema 796 do STF.'
-          : 'Sem receita imobiliária e sem excedente sobre o capital, não há ITBI a pagar.'))
+          ? 'O ITBI aqui não é cheio: a imunidade cobre o que virou capital social e a cobrança recai só sobre os '+m(excedente)+' que foram para reserva, pelo Tema 796 do STF.'
+          : 'Sem receita imobiliária e com todo o valor conferido virando capital social, não há excedente e não há ITBI a pagar.'))
       + ' Não há venda, então nenhum dinheiro entra para o dono nesta rota.')
     : ('O imposto incide só sobre o ganho, não sobre o valor total. Como o imóvel foi comprado em '+Math.round(n('vAno'))+', a lei permite reduzir a base em '+pc((1-RD.fator)*100,0)+' pelo tempo de posse, o que economiza '+m(irSem-ir)+'. Depois disso a alíquota é progressiva por faixa'+(baseTrib>0?', e a efetiva aqui ficou em '+pc(ir/baseTrib*100):'')+'. Como é compra e venda, e não integralização, o ITBI é devido normalmente.');
   var bruto=liq*tx;
@@ -1637,6 +1751,7 @@ function pdfHolding(){
       item('Forma de transferência', ROTA==='integra'?'Integralização de capital':'Compra e venda')+
       (ROTA==='integra'?item('Receita de aluguel na holding', FAT?'sim, vai alugar':'não, só sucessória'):'')+
       (ROTA==='integra'?item('Valor da integralização', VALINT==='hist'?'custo histórico':'valor de mercado'):'')+
+      (ROTA==='integra'?item('Destino do valor conferido', DEST==='tudo'?'tudo em capital social':'parte em reserva de capital'):'')+
      '</div>'+
      '<div class="pdg" style="margin-top:10px">'+
       item('ITBI',pv('q1'),pv('q1b'))+
