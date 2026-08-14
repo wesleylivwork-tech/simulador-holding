@@ -1075,9 +1075,21 @@ function calc(){
   var custoTot=pagoTot+E.prop;
 
   var h=document.getElementById('hS');
-  h.textContent=m(sobra); h.className='big'+(sobra<0?' neg':'');
-  document.getElementById('hPm').textContent=m(sobra*u);
-  document.getElementById('hC').textContent=(E.nova>0?(rend/E.nova).toFixed(2).replace('.',','):'0,00')+'x';
+  if(integra){
+    h.textContent=m(custos); h.className='big neg';
+    document.querySelector('.hero .lb').textContent='custo total para levar os imóveis para a holding';
+    document.getElementById('hPm').textContent=V>0?pc(custos/V*100,2):'0%';
+    document.querySelectorAll('.hero .rgt .l')[0].textContent='do valor dos imóveis';
+    document.getElementById('hC').textContent=itbi>0?m(itbi):'isento';
+    document.querySelectorAll('.hero .rgt .l')[1].textContent='de ITBI';
+  }else{
+    h.textContent=m(sobra); h.className='big'+(sobra<0?' neg':'');
+    document.querySelector('.hero .lb').textContent='sobra no primeiro mês depois de contemplar, já pagando a parcela';
+    document.getElementById('hPm').textContent=m(sobra*u);
+    document.querySelectorAll('.hero .rgt .l')[0].textContent='por milhão';
+    document.getElementById('hC').textContent=(E.nova>0?(rend/E.nova).toFixed(2).replace('.',','):'0,00')+'x';
+    document.querySelectorAll('.hero .rgt .l')[1].textContent='cobertura';
+  }
 
   document.getElementById('s1').textContent='nos primeiros '+mc+' meses';
   document.getElementById('a1').textContent=m(E.prop);
@@ -1256,7 +1268,13 @@ function calc(){
     ', então na venda o redutor corta <b>'+pc((1-RD.fator)*100,0)+'</b> do lucro tributável. O imposto cai de '+
     m(irSem)+' para <b>'+m(ir)+'</b>, uma economia de <b>'+m(irSem-ir)+'</b>. Mude o ano no painel para ver o efeito.';
 
-  document.getElementById('rot').innerHTML=
+  document.querySelector('.tl').style.display = integra ? 'none' : 'block';
+  document.getElementById('rot').innerHTML= integra ?
+    ('Os imóveis entram na holding como capital, no valor de <b>'+m(capital)+'</b>. '+
+     (itbi>0?'O ITBI é devido e fica em <b>'+m(itbi)+'</b>. ':'Não há ITBI a pagar. ')+
+     (ir>0?'O ganho de capital apurado é de <b>'+m(ir)+'</b>. ':'Não há ganho de capital, porque a integralização é pelo valor da declaração. ')+
+     'Somando o cartório, o custo total para transferir é de <b>'+m(custos)+'</b>, ou '+pc(custos/V*100,2)+' do valor dos imóveis. '+
+     (DOA!=='nao' ? 'Na doação das quotas aos herdeiros, o ITCMD fica em <b>'+m(DOA==='usuf'?itcmd(capital)*(2/3):itcmd(capital))+'</b>'+(DOA==='usuf'?' agora, mais um terço quando a propriedade se consolidar.':'.') : 'Não há venda, então nenhum dinheiro entra para o dono nesta operação.')) :
     'Você entra com <b>'+m(E.prop)+'</b> de lance e paga <b>'+m(E.pr)+'</b> por mês durante '+mc+
     ' meses. Quando a carta é contemplada, a holding compra os imóveis de você por <b>'+m(V)+
     '</b>. Descontado o imposto, o ITBI e o cartório, sobram <b>'+m(liq)+
